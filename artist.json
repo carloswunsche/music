@@ -5,5 +5,7 @@
   "location": "Miami, FL",
   "avatar": "avatar.jpg",
   "links": {},
-  "releases": []
+  "releases": [
+    "singles/singles.json"
+  ]
 }

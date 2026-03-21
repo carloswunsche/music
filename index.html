@@ -149,9 +149,11 @@
   .track-item{background:var(--surface);border:1px solid var(--border);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;flex:1;position:relative;}
   .track-item.drag-over{border-color:var(--accent);background:rgba(123,94,167,0.08);}
   .track-item.dragging{opacity:0.4;}
-  .playlist-track{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);}
+  .playlist-track{display:flex;align-items:center;gap:10px;padding:10px 14px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);}
   .playlist-track.drag-over{border-color:var(--accent);background:rgba(123,94,167,0.08);}
   .playlist-track.dragging{opacity:0.4;}
+  .playlist-track .drag-handle{width:16px;height:28px;background:transparent;border:none;border-radius:4px;opacity:0.4;flex-shrink:0;}
+  .playlist-track:hover .drag-handle{opacity:1;}
   .track-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;min-height:20px;}
   .track-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
   .track-fields{display:grid;grid-template-columns:1fr 110px;gap:10px;}
@@ -692,7 +694,7 @@ function albumHTML(rel) {
   <div class="field-row">
     <div class="field" style="margin-bottom:0">
       <label class="label">Release title</label>
-      <input class="input" id="rel-title-${id}" type="text" value="${esc(d.title||'')}" oninput="markDirty()" placeholder="Title">
+      <input class="input" id="rel-title-${id}" type="text" value="${esc(d.title||'')}" oninput="markDirty();updateNavTitle('${id}',this.value)" placeholder="Title">
     </div>
     <div class="field" style="margin-bottom:0">
       <label class="label">Year</label>
@@ -1310,6 +1312,11 @@ function handleReleaseCover(relId, input) {
 }
 
 // ── PLAYLIST HTML ─────────────────────────────────────────────────
+function updateNavTitle(id, val) {
+  const el = document.getElementById('nav-rel-' + id);
+  if (el) { const n = el.querySelector('.nav-release-name'); if (n) n.textContent = val || 'Untitled'; }
+}
+
 function playlistHTML(rel) {
   const id = rel.id;
   const d = rel.data;
@@ -1326,10 +1333,10 @@ function playlistHTML(rel) {
   const trackRows = (d.tracks||[]).map((t,i) => playlistTrackRow(id, i, t, allTracks)).join('');
 
   return `
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
     <div class="sec-title" style="margin-bottom:0">${esc(d.title||'Untitled Playlist')}</div>
-    <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--danger);border-color:rgba(224,108,108,0.3)" onclick="deleteRelease('${id}')">Remove playlist</button>
     <span class="type-badge type-playlist">Playlist</span>
+    <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--danger);border-color:rgba(224,108,108,0.3)" onclick="deleteRelease('${id}')">Remove playlist</button>
   </div>
   <p class="sec-sub">Pick tracks from your existing releases to build this playlist.</p>
 
@@ -1347,7 +1354,7 @@ function playlistHTML(rel) {
   </div>
 
   <div class="field"><label class="label">Playlist name</label>
-    <input class="input" id="rel-title-${id}" type="text" value="${esc(d.title||'')}" placeholder="My Playlist" oninput="markDirty()">
+    <input class="input" id="rel-title-${id}" type="text" value="${esc(d.title||'')}" placeholder="My Playlist" oninput="markDirty();updateNavTitle('${id}',this.value)">
   </div>
 
   <div class="divider"></div>
@@ -1398,6 +1405,7 @@ function addPlaylistTrack(relId) {
   const div = document.createElement('div');
   div.innerHTML = playlistTrackRow(relId, idx, { src:'', title:'', duration:0 }, allTracks);
   container.appendChild(div.firstElementChild);
+  setTimeout(() => initDragDrop('tracks-' + relId), 50);
   markDirty();
 }
 

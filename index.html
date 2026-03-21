@@ -382,6 +382,33 @@ async function ghPutBinary(path, b64, sha, msg) {
 async function ghGetSha(path) {
   try { return (await ghGet(path)).sha; } catch { return null; }
 }
+async function ghDelete(path, sha, msg) {
+  if (!sha) sha = await ghGetSha(path);
+  if (!sha) return; // file doesn't exist, nothing to delete
+  const r = await fetch(`https://api.github.com/repos/${GH.username}/${GH.repo}/contents/${path}`, {
+    method: 'DELETE',
+    headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: msg || `Remove ${path}`, sha })
+  });
+  // 404 = already gone, that's fine
+  if (!r.ok && r.status !== 404) console.warn('Delete failed for', path, r.status);
+}
+async function ghDelete(path, sha, msg) {
+  if (!sha) return; // file doesn't exist, nothing to delete
+  try {
+    await fetch(`https://api.github.com/repos/${GH.username}/${GH.repo}/contents/${path}`, {
+      method: 'DELETE',
+      headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg || `Delete ${path.split('/').pop()}`, sha })
+    });
+  } catch(e) { console.warn('Could not delete', path, e); }
+}
+async function ghListFolder(folder) {
+  try {
+    const items = await ghGet(folder);
+    return Array.isArray(items) ? items : [];
+  } catch { return []; }
+}
 
 // ── CONNECT ──────────────────────────────────────────────────────
 async function connectGitHub() {
@@ -1451,14 +1478,49 @@ function createRelease(type) {
   toast(`${type === 'playlist' ? 'Playlist' : type === 'album' ? 'Album' : 'Singles'} created — fill in the details and hit Save`);
 }
 
-function deleteRelease(id) {
-  if (!confirm('Remove this release? This only removes it from your page — uploaded files stay in your repo.')) return;
+async function deleteRelease(id) {
+  const rel = releases.find(r => r.id === id);
+  if (!rel) return;
+
+  // Playlists only reference tracks from other releases — just remove from list, no file deletion
+  if (rel.type === 'playlist') {
+    if (!confirm('Remove this playlist? No files will be deleted.')) return;
+    releases = releases.filter(r => r.id !== id);
+    currentReleaseId = null;
+    renderReleasesNav();
+    showSection('profile');
+    markDirty();
+    toast('Playlist removed');
+    return;
+  }
+
+  // Album/EP: offer to delete files
+  const confirmMsg = 'Remove this album/EP?\n\nClick OK to also delete its files from GitHub (cover art and tracks).\nAny singles referenced in this album will NOT be deleted.\n\nThis cannot be undone.';
+  if (!confirm(confirmMsg)) return;
+
   releases = releases.filter(r => r.id !== id);
   currentReleaseId = null;
   renderReleasesNav();
   showSection('profile');
   markDirty();
-  toast('Release removed');
+  toast('Removing album and deleting files…');
+
+  // Delete files in the release folder — skip anything under singles/
+  const folder = rel.path.substring(0, rel.path.lastIndexOf('/'));
+  if (folder && !folder.startsWith('singles')) {
+    const files = await ghListFolder(folder);
+    for (const file of files) {
+      if (file.type !== 'file') continue;
+      if (file.path.startsWith('singles/')) continue; // never touch singles
+      await ghDelete(file.path, file.sha, `Remove ${rel.data.title||'album'}: delete ${file.name}`);
+    }
+  }
+
+  // Also delete the JSON file itself
+  const jsonSha = rel._sha || await ghGetSha(rel.path);
+  if (jsonSha) await ghDelete(rel.path, jsonSha, `Remove ${rel.data.title||'album'}`);
+
+  toast('Album removed and files deleted ✓');
 }
 
 // ── GET RELEASE DATA FROM DOM ─────────────────────────────────────

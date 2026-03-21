@@ -133,19 +133,26 @@
   /* TRACKS */
   .tracks-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
   .tracks-label{font-size:13px;font-weight:700;}
-  .track-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;position:relative;}
+  .track-item-wrap{display:flex;align-items:stretch;margin-bottom:10px;}
+  .drag-handle{
+    cursor:grab;color:var(--text3);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;width:20px;
+    border-radius:var(--radius-sm) 0 0 var(--radius-sm);
+    background:var(--bg3);border:1px solid var(--border);border-right:none;
+    transition:color var(--ease),background var(--ease);
+  }
+  .drag-handle:hover{color:var(--text2);background:var(--surface2);}
+  .drag-handle:active{cursor:grabbing;}
+  .drag-handle svg{width:12px;height:12px;}
+  .track-item{background:var(--surface);border:1px solid var(--border);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;flex:1;position:relative;}
   .track-item.drag-over{border-color:var(--accent);background:rgba(123,94,167,0.08);}
   .track-item.dragging{opacity:0.4;}
-  .drag-handle{cursor:grab;color:var(--text3);padding:4px;border-radius:4px;display:flex;align-items:center;flex-shrink:0;transition:color var(--ease);}
-  .drag-handle:hover{color:var(--text2);}
-  .drag-handle:active{cursor:grabbing;}
-  .drag-handle svg{width:14px;height:14px;}
   .playlist-track{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);}
   .playlist-track.drag-over{border-color:var(--accent);background:rgba(123,94,167,0.08);}
   .playlist-track.dragging{opacity:0.4;}
-  .track-item-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-  .track-num{width:24px;height:24px;border-radius:6px;background:var(--bg3);color:var(--text3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .track-title-disp{font-size:13px;font-weight:600;flex:1;}
+  .track-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;min-height:20px;}
+  .track-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
   .track-fields{display:grid;grid-template-columns:1fr 110px;gap:10px;}
   .track-status{font-size:12px;margin-top:6px;display:flex;align-items:center;gap:6px;}
   .track-status.uploading{color:var(--warning);}
@@ -767,7 +774,7 @@ function trackRowHTML(relId, idx, track, isSingles=false) {
     `<option value="" data-src="${esc(o.src)}" data-dur="${o.duration}" data-title="${esc(o.title)}" ${isFromSingle && track.src === o.src ? 'selected' : ''}>${esc(o.label)}</option>`
   ).join('');
 
-  return `<div class="track-item" id="titem-${relId}-${idx}" data-idx="${idx}">
+  return `<div class="track-item-wrap" id="twrap-${relId}-${idx}" data-idx="${idx}"><div class="drag-handle" draggable="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8-15a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg></div><div class="track-item" id="titem-${relId}-${idx}">
 
     <!-- HEADER: drag + number + duration (albums) + delete -->
     <div class="track-item-header">
@@ -903,7 +910,7 @@ function addTrackToRelease(relId) {
   const idx = document.getElementById(`tracks-${relId}`).children.length;
   const div = document.createElement('div');
   div.innerHTML = trackRowHTML(relId, idx, { title:'', src:'', duration:0 }, rel.type === 'singles');
-  document.getElementById(`tracks-${relId}`).appendChild(div.firstElementChild);
+  document.getElementById(`tracks-${relId}`).appendChild(div.firstElementChild || div.children[0]);
   setTimeout(() => initDragDrop('tracks-' + relId), 50);
   markDirty();
 }
@@ -942,7 +949,7 @@ function handleLrcFile(relId, idx, input) {
 }
 
 function removeTrackFromRelease(relId, idx) {
-  const el = document.getElementById(`titem-${relId}-${idx}`);
+  const el = document.getElementById(`twrap-${relId}-${idx}`) || document.getElementById(`titem-${relId}-${idx}`);
   if (el) el.remove();
   renumberReleaseTracks(relId);
   markDirty();
@@ -954,7 +961,7 @@ let dragSrc = null;
 function initDragDrop(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  container.querySelectorAll('.track-item, .playlist-track').forEach(item => {
+  container.querySelectorAll('.track-item-wrap, .playlist-track').forEach(item => {
     const handle = item.querySelector('.drag-handle');
     if (!handle) return;
     handle.addEventListener('dragstart', e => {

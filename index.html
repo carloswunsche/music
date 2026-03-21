@@ -670,6 +670,7 @@ function albumHTML(rel) {
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:${isSingles ? '20px' : '6px'}">
     <div class="sec-title" style="margin-bottom:0">${esc(d.title||'Untitled')}</div>
     ${isSingles ? '' : `<span class="type-badge ${typeClass}">${typeLabel}</span>`}
+    ${isSingles ? '' : `<button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--danger);border-color:rgba(224,108,108,0.3)" onclick="deleteRelease('${id}')">Remove ${rel.type === 'playlist' ? 'playlist' : 'album'}</button>`}
   </div>
   ${isSingles ? '' : `<p class="sec-sub">Edit this release, upload tracks and cover art.</p>`}
 
@@ -1327,6 +1328,7 @@ function playlistHTML(rel) {
   return `
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
     <div class="sec-title" style="margin-bottom:0">${esc(d.title||'Untitled Playlist')}</div>
+    <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--danger);border-color:rgba(224,108,108,0.3)" onclick="deleteRelease('${id}')">Remove playlist</button>
     <span class="type-badge type-playlist">Playlist</span>
   </div>
   <p class="sec-sub">Pick tracks from your existing releases to build this playlist.</p>

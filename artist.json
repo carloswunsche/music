@@ -2,9 +2,10 @@
   "schema": "unmuted/v1",
   "name": "",
   "bio": "",
-  "avatar": "",
-  "links": {
-  },
-  "albums": [
+  "location": "",
+  "avatar": "avatar.jpg",
+  "links": {},
+  "releases": [
+    "singles/singles.json"
   ]
 }

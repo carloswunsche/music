@@ -282,6 +282,11 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       New release
     </button>
+    <div class="nav-section">Discover</div>
+    <button class="nav-item" id="nav-recs" onclick="showSection('recs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Recommendations
+    </button>
     <div class="nav-section">Settings</div>
     <button class="nav-item" id="nav-settings" onclick="showSection('settings')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
@@ -550,6 +555,7 @@ function renderSection(name) {
   else if (name === 'links') content.innerHTML = linksHTML();
   else if (name === 'share') content.innerHTML = shareHTML();
   else if (name === 'settings') content.innerHTML = settingsHTML();
+  else if (name === 'recs') { content.innerHTML = recsHTML(); populateRecs(artistData); }
 
   if (name === 'profile') {
     if (artistData) populateProfile(artistData);
@@ -593,14 +599,7 @@ function profileHTML() {
   </div>
   <div class="divider"></div>
   <div class="field"><label class="label">Bio</label><textarea class="textarea" id="f-bio" oninput="markDirty()" placeholder="Tell listeners about yourself and your music…"></textarea></div>
-  <div class="divider"></div>
-  <div class="sec-title" style="font-size:15px;margin-bottom:4px">Recommended artists</div>
-  <p class="sec-sub" style="margin-bottom:14px">Up to 10 artists you recommend. Listeners will see these on your page and can follow them.</p>
-  <div id="recs-list"></div>
-  <button class="btn btn-ghost btn-sm" id="add-rec-btn" onclick="addRecRow()" style="margin-top:4px">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Add recommendation
-  </button>`;
+`;
 }
 
 function populateProfile(d) {
@@ -608,44 +607,118 @@ function populateProfile(d) {
   const b = document.getElementById('f-bio'); if (b) b.value = d.bio || '';
   const l = document.getElementById('f-location'); if (l) l.value = d.location || '';
   const ph = document.getElementById('avatar-ph'); if (ph) ph.textContent = (d.name||'?').charAt(0);
-  // Populate recommendations
-  const recsList = document.getElementById('recs-list');
-  if (recsList) {
-    recsList.innerHTML = '';
-    (d.recommendations || []).forEach(url => addRecRow(url));
-    updateAddRecBtn();
-  }
+}
+
+function recsHTML() {
+  return `
+  <div class="sec-title">Recommendations</div>
+  <p class="sec-sub">Up to 10 artists you recommend. Listeners will see them on your page and can follow them directly.</p>
+  <div id="recs-list" style="margin-bottom:12px"></div>
+  <div style="display:flex;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:16px">
+    <button id="rec-tab-link" onclick="setRecTab('link')"
+      style="border:none;background:var(--surface2);color:var(--text);font-family:var(--font);font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;transition:all var(--ease)">Paste link</button>
+    <button id="rec-tab-gh" onclick="setRecTab('gh')"
+      style="border:none;background:transparent;color:var(--text3);font-family:var(--font);font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;transition:all var(--ease)">GitHub repository</button>
+  </div>
+  <div id="rec-panel-link">
+    <div style="display:flex;gap:8px;align-items:center">
+      <input class="input" id="rec-url-input" type="text" placeholder="https://artist.github.io/music/artist.json" style="flex:1;font-size:13px" onkeydown="if(event.key==='Enter')addRecFromInput()">
+      <button class="btn btn-ghost btn-sm" onclick="addRecFromInput()">Add</button>
+    </div>
+  </div>
+  <div id="rec-panel-gh" style="display:none">
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+      <div style="flex:1;min-width:120px">
+        <label class="label" style="margin-bottom:4px">GitHub username</label>
+        <input class="input" id="rec-gh-user" type="text" placeholder="their-username" style="font-size:13px" onkeydown="if(event.key==='Enter')addRecFromGh()">
+      </div>
+      <div style="width:130px">
+        <label class="label" style="margin-bottom:4px">Repo</label>
+        <input class="input" id="rec-gh-repo" type="text" placeholder="music" style="font-size:13px" onkeydown="if(event.key==='Enter')addRecFromGh()">
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="addRecFromGh()" style="flex-shrink:0;margin-bottom:1px">Add</button>
+    </div>
+  </div>`;
+}
+
+function setRecTab(tab) {
+  const linkBtn = document.getElementById('rec-tab-link');
+  const ghBtn   = document.getElementById('rec-tab-gh');
+  const linkPanel = document.getElementById('rec-panel-link');
+  const ghPanel   = document.getElementById('rec-panel-gh');
+  if (!linkBtn) return;
+  linkBtn.style.background = tab === 'link' ? 'var(--surface2)' : 'transparent';
+  linkBtn.style.color      = tab === 'link' ? 'var(--text)'     : 'var(--text3)';
+  ghBtn.style.background   = tab === 'gh'   ? 'var(--surface2)' : 'transparent';
+  ghBtn.style.color        = tab === 'gh'   ? 'var(--text)'     : 'var(--text3)';
+  linkPanel.style.display  = tab === 'link' ? 'block' : 'none';
+  ghPanel.style.display    = tab === 'gh'   ? 'block' : 'none';
+}
+
+function addRecFromInput() {
+  const val = document.getElementById('rec-url-input')?.value.trim();
+  if (!val) return;
+  addRecRow(val);
+  document.getElementById('rec-url-input').value = '';
+}
+
+function addRecFromGh() {
+  const user = document.getElementById('rec-gh-user')?.value.trim();
+  const repo = document.getElementById('rec-gh-repo')?.value.trim() || 'music';
+  if (!user) return;
+  const url = 'https://' + user + '.github.io/' + repo + '/artist.json';
+  addRecRow(url);
+  document.getElementById('rec-gh-user').value = '';
+  document.getElementById('rec-gh-repo').value = '';
+}
+
+function populateRecs(d) {
+  const list = document.getElementById('recs-list');
+  if (!list) return;
+  list.innerHTML = '';
+  (d?.recommendations || []).forEach(url => addRecRow(url));
 }
 
 function addRecRow(url) {
   const list = document.getElementById('recs-list');
   if (!list) return;
-  if (list.children.length >= 10) return;
-  const row = document.createElement('div');
-  row.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px';
+  if (list.children.length >= 10) { toast('Maximum 10 recommendations'); return; }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'track-item-wrap';
+  wrap.style.marginBottom = '8px';
+
+  const handle = document.createElement('div');
+  handle.className = 'drag-handle';
+  handle.draggable = true;
+  handle.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11"><path d="M8 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8-15a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>';
+
+  const inner = document.createElement('div');
+  inner.className = 'track-item';
+  inner.style.cssText = 'display:flex;gap:8px;align-items:center;padding:10px 12px';
+
   const inp = document.createElement('input');
   inp.className = 'input';
   inp.type = 'text';
-  inp.placeholder = 'https://username.github.io/music/artist.json';
   inp.value = url || '';
   inp.style.cssText = 'flex:1;font-size:12px';
   inp.oninput = function(){ markDirty(); };
+
   const delbtn = document.createElement('button');
-  delbtn.className = 'btn btn-ghost btn-sm btn-icon';
+  delbtn.className = 'btn btn-danger btn-sm btn-icon';
   delbtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-  delbtn.onclick = function(){ this.parentElement.remove(); markDirty(); updateAddRecBtn(); };
-  row.appendChild(inp);
-  row.appendChild(delbtn);
-  list.appendChild(row);
-  updateAddRecBtn();
+  delbtn.onclick = function(){ wrap.remove(); markDirty(); };
+
+  inner.appendChild(inp);
+  inner.appendChild(delbtn);
+  wrap.appendChild(handle);
+  wrap.appendChild(inner);
+  list.appendChild(wrap);
+  setTimeout(() => initDragDrop('recs-list'), 50);
   markDirty();
 }
 
-function updateAddRecBtn() {
-  const btn = document.getElementById('add-rec-btn');
-  const list = document.getElementById('recs-list');
-  if (btn && list) btn.style.display = list.children.length >= 10 ? 'none' : 'inline-flex';
-}
+function updateAddRecBtn() {}
 
 // ── LINKS HTML ───────────────────────────────────────────────────
 function linksHTML() {
@@ -1789,10 +1862,10 @@ function getProfileData() {
     links = artistData?.links || {};
   }
 
-  // Read recommendations
+  // Read recommendations — inputs are inside .track-item children
   const recsList = document.getElementById('recs-list');
   const recommendations = recsList
-    ? Array.from(recsList.querySelectorAll('input')).map(i => i.value.trim()).filter(Boolean)
+    ? Array.from(recsList.querySelectorAll('input[type="text"]')).map(i => i.value.trim()).filter(Boolean)
     : (artistData?.recommendations || []);
 
   return {

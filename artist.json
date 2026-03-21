@@ -9,5 +9,9 @@
   },
   "releases": [
     "singles/singles.json"
+  ],
+  "recommendations": [
+    "https://julabrego.github.io/music/artist.json",
+    "https://JZW-Music.github.io/music/artist.json"
   ]
 }

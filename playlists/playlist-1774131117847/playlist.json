@@ -1,13 +1,8 @@
 {
-  "title": "Culo",
+  "title": "Test Playlist",
   "type": "playlist",
   "cover": "cover.jpg",
   "tracks": [
-    {
-      "title": "This time",
-      "src": "singles/this-time.mp3",
-      "duration": 230
-    },
     {
       "title": "This time",
       "src": "singles/this-time.mp3",

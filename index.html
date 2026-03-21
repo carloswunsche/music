@@ -137,14 +137,15 @@
   .drag-handle{
     cursor:grab;color:var(--text3);
     display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;width:20px;
+    flex-shrink:0;width:18px;margin-right:0;
     border-radius:var(--radius-sm) 0 0 var(--radius-sm);
     background:var(--bg3);border:1px solid var(--border);border-right:none;
     transition:color var(--ease),background var(--ease);
+    opacity:0.5;
   }
-  .drag-handle:hover{color:var(--text2);background:var(--surface2);}
+  .track-item-wrap:hover .drag-handle{opacity:1;color:var(--text2);}
   .drag-handle:active{cursor:grabbing;}
-  .drag-handle svg{width:12px;height:12px;}
+  .drag-handle svg{width:11px;height:11px;}
   .track-item{background:var(--surface);border:1px solid var(--border);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;flex:1;position:relative;}
   .track-item.drag-over{border-color:var(--accent);background:rgba(123,94,167,0.08);}
   .track-item.dragging{opacity:0.4;}
@@ -705,8 +706,7 @@ function albumHTML(rel) {
     </button>
   </div>
   <div id="tracks-${id}">${tracks}</div>
-  <div class="divider"></div>
-  <button class="btn btn-danger btn-sm" onclick="deleteRelease('${id}')">Delete this release</button>`;
+  <div class="divider"></div>`;
 }
 
 function getSingleOptions() {
@@ -776,14 +776,13 @@ function trackRowHTML(relId, idx, track, isSingles=false) {
 
   return `<div class="track-item-wrap" id="twrap-${relId}-${idx}" data-idx="${idx}"><div class="drag-handle" draggable="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8-15a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg></div><div class="track-item" id="titem-${relId}-${idx}">
 
-    <!-- HEADER: drag + number + duration (albums) + delete -->
+    <!-- HEADER: number (albums) + duration + delete -->
     <div class="track-item-header">
-      <div class="drag-handle" draggable="true" onmousedown="event.stopPropagation()">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8-15a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+      ${!isSingles ? `<span class="track-label">Track ${idx+1}</span>` : ''}
+      <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
+        <span class="dur-display" style="font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums${!isSingles && durDisplay ? '' : ';display:none'}">${!isSingles && durDisplay ? durDisplay : ''}</span>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="removeTrackFromRelease('${relId}',${idx})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
-      <div class="track-num">${idx+1}</div>
-      <span class="dur-display" style="font-size:11px;color:var(--text3);margin-left:auto;margin-right:8px;font-variant-numeric:tabular-nums${!isSingles && durDisplay ? '' : ';display:none'}">${!isSingles && durDisplay ? durDisplay : ''}</span>
-      <button class="btn btn-danger btn-sm btn-icon" onclick="removeTrackFromRelease('${relId}',${idx})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
 
     <div style="display:flex;gap:14px;align-items:flex-start;margin-top:10px">
@@ -1349,8 +1348,7 @@ function playlistHTML(rel) {
   </div>
   ${allTracks.length === 0 ? `<div style="font-size:13px;color:var(--text3);padding:16px 0">Upload some tracks to your singles or albums first, then come back to build a playlist.</div>` : ''}
   <div id="tracks-${id}">${trackRows}</div>
-  <div class="divider"></div>
-  <button class="btn btn-danger btn-sm" onclick="deleteRelease('${id}')">Delete this playlist</button>`;
+  <div class="divider"></div>`;
 }
 
 function playlistTrackRow(relId, idx, track, allTracks) {

@@ -9,6 +9,7 @@
   },
   "releases": [
     "singles/singles.json",
-    "albums/album-1774131070405/album.json"
+    "albums/album-1774131070405/album.json",
+    "playlists/playlist-1774131117847/playlist.json"
   ]
 }

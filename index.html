@@ -241,9 +241,11 @@
       <div class="setup-step"><div class="setup-step-num">3</div><div>Tick the <strong>repo</strong> checkbox — that's the only permission needed</div></div>
       <div class="setup-step"><div class="setup-step-num">4</div><div>Click <strong>Generate token</strong> and paste it below</div></div>
     </div>
-    <div class="field"><label class="label">GitHub token</label><input class="input" id="token-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"></div>
-    <div class="field"><label class="label">GitHub username</label><input class="input" id="username-input" type="text" placeholder="carloswunsche"></div>
-    <div class="field"><label class="label">Repository name</label><input class="input" id="repo-input" type="text" placeholder="music" value="music"></div>
+    <input type="text" style="display:none" aria-hidden="true">
+    <input type="password" style="display:none" aria-hidden="true">
+    <div class="field"><label class="label">GitHub token</label><input class="input" id="token-input" type="text" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="-webkit-text-security:disc;font-family:monospace"></div>
+    <div class="field"><label class="label">GitHub username</label><input class="input" id="username-input" type="text" placeholder="carloswunsche" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="field"><label class="label">Repository name</label><input class="input" id="repo-input" type="text" placeholder="music" value="music" autocomplete="off" spellcheck="false"></div>
     <div class="alert alert-danger" id="setup-error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="setup-error-msg"></span></div>
     <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="connectGitHub()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
@@ -1536,7 +1538,7 @@ function settingsHTML() {
     </div>
     <div class="input-hint">Change this if you renamed your GitHub repo.</div>
   </div>
-  <div class="field"><label class="label">Token</label><input class="input" value="••••••••••••••••" type="password" readonly></div>
+  <div class="field"><label class="label">Token</label><input class="input" value="••••••••••••••••" type="text" readonly autocomplete="off"></div>
   <button class="btn btn-danger" onclick="disconnect()" style="margin-top:8px">Disconnect GitHub</button>`;
 }
 
@@ -1603,11 +1605,15 @@ async function saveAll() {
     // 3. Save all release JSON files
     for (const rel of releases) {
       const data = currentReleaseId === rel.id ? getReleaseData(rel) : rel.data;
-      const json = JSON.stringify({ ...data, _sha: undefined, _dirty: undefined }, null, 2);
+      // JSON.stringify handles escaping of newlines, special chars, etc.
+      const cleanData = JSON.parse(JSON.stringify({ ...data, _sha: undefined, _dirty: undefined }));
+      const json = JSON.stringify(cleanData, null, 2);
+      // Quick sanity check — parse it back before sending
+      try { JSON.parse(json); } catch(e) { toast('JSON error in ' + (rel.data.title||rel.id) + ': ' + e.message, 'danger'); continue; }
       const sha = rel._sha || await ghGetSha(rel.path);
       const result = await ghPut(rel.path, json, sha, `Update ${rel.data.title||rel.id}`);
       rel._sha = result.content.sha;
-      rel.data = data;
+      rel.data = cleanData;
     }
 
     // 4. Save artist.json with updated albums list

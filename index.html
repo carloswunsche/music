@@ -1484,7 +1484,7 @@ async function deleteRelease(id) {
 
   // Playlists only reference tracks from other releases — just remove from list, no file deletion
   if (rel.type === 'playlist') {
-    if (!confirm('Remove this playlist? No files will be deleted.')) return;
+  
     releases = releases.filter(r => r.id !== id);
     currentReleaseId = null;
     renderReleasesNav();
@@ -1494,9 +1494,7 @@ async function deleteRelease(id) {
     return;
   }
 
-  // Album/EP: offer to delete files
-  const confirmMsg = 'Remove this album/EP?\n\nClick OK to also delete its files from GitHub (cover art and tracks).\nAny singles referenced in this album will NOT be deleted.\n\nThis cannot be undone.';
-  if (!confirm(confirmMsg)) return;
+  // Album/EP: remove and clean up files
 
   releases = releases.filter(r => r.id !== id);
   currentReleaseId = null;

@@ -230,7 +230,7 @@
   <div class="topbar-right">
     <button class="btn btn-ghost" id="copy-link-btn" onclick="copyDeepLink()" style="display:none" title="Copy your Unmuted share link">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      Share my page
+      Share my music
     </button>
     <button class="btn btn-primary" id="save-btn" onclick="saveAll()" disabled>
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -281,11 +281,6 @@
     <button class="nav-add" onclick="openNewReleaseModal()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       New release
-    </button>
-    <div class="nav-section">Share</div>
-    <button class="nav-item" id="nav-share" onclick="showSection('share')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      Share
     </button>
     <div class="nav-section">Settings</div>
     <button class="nav-item" id="nav-settings" onclick="showSection('settings')">
@@ -597,7 +592,15 @@ function profileHTML() {
     <div class="field" style="margin-bottom:0"><label class="label">Location <span>(optional)</span></label><input class="input" id="f-location" type="text" oninput="markDirty()" placeholder="Miami, FL"></div>
   </div>
   <div class="divider"></div>
-  <div class="field"><label class="label">Bio</label><textarea class="textarea" id="f-bio" oninput="markDirty()" placeholder="Tell listeners about yourself and your music…"></textarea></div>`;
+  <div class="field"><label class="label">Bio</label><textarea class="textarea" id="f-bio" oninput="markDirty()" placeholder="Tell listeners about yourself and your music…"></textarea></div>
+  <div class="divider"></div>
+  <div class="sec-title" style="font-size:15px;margin-bottom:4px">Recommended artists</div>
+  <p class="sec-sub" style="margin-bottom:14px">Up to 10 artists you recommend. Listeners will see these on your page and can follow them.</p>
+  <div id="recs-list"></div>
+  <button class="btn btn-ghost btn-sm" id="add-rec-btn" onclick="addRecRow()" style="margin-top:4px">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add recommendation
+  </button>`;
 }
 
 function populateProfile(d) {
@@ -605,6 +608,43 @@ function populateProfile(d) {
   const b = document.getElementById('f-bio'); if (b) b.value = d.bio || '';
   const l = document.getElementById('f-location'); if (l) l.value = d.location || '';
   const ph = document.getElementById('avatar-ph'); if (ph) ph.textContent = (d.name||'?').charAt(0);
+  // Populate recommendations
+  const recsList = document.getElementById('recs-list');
+  if (recsList) {
+    recsList.innerHTML = '';
+    (d.recommendations || []).forEach(url => addRecRow(url));
+    updateAddRecBtn();
+  }
+}
+
+function addRecRow(url) {
+  const list = document.getElementById('recs-list');
+  if (!list) return;
+  if (list.children.length >= 10) return;
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px';
+  const inp = document.createElement('input');
+  inp.className = 'input';
+  inp.type = 'text';
+  inp.placeholder = 'https://username.github.io/music/artist.json';
+  inp.value = url || '';
+  inp.style.cssText = 'flex:1;font-size:12px';
+  inp.oninput = function(){ markDirty(); };
+  const delbtn = document.createElement('button');
+  delbtn.className = 'btn btn-ghost btn-sm btn-icon';
+  delbtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  delbtn.onclick = function(){ this.parentElement.remove(); markDirty(); updateAddRecBtn(); };
+  row.appendChild(inp);
+  row.appendChild(delbtn);
+  list.appendChild(row);
+  updateAddRecBtn();
+  markDirty();
+}
+
+function updateAddRecBtn() {
+  const btn = document.getElementById('add-rec-btn');
+  const list = document.getElementById('recs-list');
+  if (btn && list) btn.style.display = list.children.length >= 10 ? 'none' : 'inline-flex';
 }
 
 // ── LINKS HTML ───────────────────────────────────────────────────
@@ -1749,10 +1789,17 @@ function getProfileData() {
     links = artistData?.links || {};
   }
 
+  // Read recommendations
+  const recsList = document.getElementById('recs-list');
+  const recommendations = recsList
+    ? Array.from(recsList.querySelectorAll('input')).map(i => i.value.trim()).filter(Boolean)
+    : (artistData?.recommendations || []);
+
   return {
     schema: 'unmuted/v1', name, bio, location,
     avatar: 'avatar.jpg', links,
-    releases: releases.map(r => r.path)
+    releases: releases.map(r => r.path),
+    recommendations
   };
 }
 
@@ -1772,7 +1819,7 @@ function copyDeepLink() {
       btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Link copied!`;
       btn.style.color = 'var(--green)';
       setTimeout(() => {
-        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share my page`;
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share my music`;
         btn.style.color = '';
       }, 2000);
     }

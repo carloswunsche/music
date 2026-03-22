@@ -1,0 +1,20 @@
+{
+  "title": "Demos",
+  "type": "ep",
+  "year": 2026,
+  "cover": "cover.jpg",
+  "tracks": [
+    {
+      "title": "Enjoy the ride (DEMO)",
+      "src": "singles/enjoy-the-ride_001.mp3",
+      "duration": 92,
+      "fromSingle": true
+    },
+    {
+      "title": "Old and new (DEMO)",
+      "src": "singles/old-and-new-wip-001.mp3",
+      "duration": 228,
+      "fromSingle": true
+    }
+  ]
+}

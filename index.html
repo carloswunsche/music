@@ -229,9 +229,13 @@
     Unmuted <span class="logo-sub">Dashboard</span>
   </div>
   <div class="topbar-right">
+    <button class="btn btn-ghost" id="view-page-btn" onclick="openMyPage()" style="display:none" title="Open your Unmuted artist page">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      View my page
+    </button>
     <button class="btn btn-ghost" id="copy-link-btn" onclick="copyDeepLink()" style="display:none" title="Copy your Unmuted share link">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      Share my music
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy link
     </button>
     <button class="btn btn-primary" id="save-btn" onclick="saveAll()" disabled>
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -343,6 +347,7 @@ function showMain() {
   const badge = document.getElementById('connected-badge');
   if (badge) badge.style.display = 'flex';
   document.getElementById('copy-link-btn').style.display = 'inline-flex';
+  document.getElementById('view-page-btn').style.display = 'inline-flex';
   document.getElementById('save-btn').disabled = false;
   updateShareUrls();
   renderSection('profile');
@@ -633,18 +638,18 @@ function recsHTML() {
   <p class="sec-sub">Up to 10 artists you recommend. Listeners will see them on your page and can follow them directly.</p>
   <div id="recs-list" style="margin-bottom:12px"></div>
   <div style="display:flex;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:16px">
-    <button id="rec-tab-link" onclick="setRecTab('link')"
-      style="border:none;background:var(--surface2);color:var(--text);font-family:var(--font);font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;transition:all var(--ease)">Paste link</button>
     <button id="rec-tab-gh" onclick="setRecTab('gh')"
-      style="border:none;background:transparent;color:var(--text3);font-family:var(--font);font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;transition:all var(--ease)">GitHub repository</button>
+      style="border:none;background:var(--surface2);color:var(--text);font-family:var(--font);font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;transition:all var(--ease)">GitHub repository</button>
+    <button id="rec-tab-link" onclick="setRecTab('link')"
+      style="border:none;background:transparent;color:var(--text3);font-family:var(--font);font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;transition:all var(--ease)">Paste link</button>
   </div>
-  <div id="rec-panel-link">
+  <div id="rec-panel-link" style="display:none">
     <div style="display:flex;gap:8px;align-items:center">
       <input class="input" id="rec-url-input" type="text" placeholder="https://artist.github.io/music/artist.json" style="flex:1;font-size:13px" onkeydown="if(event.key==='Enter')addRecFromInput()">
       <button class="btn btn-ghost btn-sm" onclick="addRecFromInput()">Add</button>
     </div>
   </div>
-  <div id="rec-panel-gh" style="display:none">
+  <div id="rec-panel-gh">
     <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
       <div style="flex:1;min-width:120px">
         <label class="label" style="margin-bottom:4px">GitHub username</label>
@@ -676,6 +681,8 @@ function setRecTab(tab) {
 function addRecFromInput() {
   const val = document.getElementById('rec-url-input')?.value.trim();
   if (!val) return;
+  const existing = Array.from(document.querySelectorAll('#recs-list input[type="text"]')).map(i => i.value.trim());
+  if (existing.includes(val)) { toast('Already in your recommendations'); return; }
   addRecRow(val);
   document.getElementById('rec-url-input').value = '';
 }
@@ -685,6 +692,8 @@ function addRecFromGh() {
   const repo = document.getElementById('rec-gh-repo')?.value.trim() || 'music';
   if (!user) return;
   const url = 'https://' + user + '.github.io/' + repo + '/artist.json';
+  const existing = Array.from(document.querySelectorAll('#recs-list input[type="text"]')).map(i => i.value.trim());
+  if (existing.includes(url)) { toast('Already in your recommendations'); return; }
   addRecRow(url);
   document.getElementById('rec-gh-user').value = '';
   document.getElementById('rec-gh-repo').value = '';
@@ -1909,6 +1918,12 @@ function markDirty() {}
 function setSaveStatus(type, msg) {
   // Status is now shown via the save button label - no separate text needed
 }
+function openMyPage() {
+  const base = `https://${GH.username}.github.io/${GH.repo}`;
+  const deep = `https://unmuted-music.netlify.app/add#${base}/artist.json`;
+  window.open(deep, '_blank');
+}
+
 function copyDeepLink() {
   const base = `https://${GH.username}.github.io/${GH.repo}`;
   const deep = `https://unmuted-music.netlify.app/add#${base}/artist.json`;
@@ -1918,7 +1933,7 @@ function copyDeepLink() {
       btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Link copied!`;
       btn.style.color = 'var(--green)';
       setTimeout(() => {
-        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share my music`;
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy link`;
         btn.style.color = '';
       }, 2000);
     }

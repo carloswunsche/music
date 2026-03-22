@@ -537,6 +537,11 @@ function showSection(name) {
 }
 
 function showRelease(id) {
+  // Save current release DOM state before switching
+  if (currentReleaseId && currentReleaseId !== id) {
+    const cur = releases.find(r => r.id === currentReleaseId);
+    if (cur) cur.data = getReleaseData(cur);
+  }
   currentSection = 'release';
   currentReleaseId = id;
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));

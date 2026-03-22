@@ -1759,8 +1759,9 @@ function shareHTML() {
 }
 function settingsHTML() {
   return `
-  <div class="sec-title">Settings <span style="font-size:12px;font-weight:400;color:var(--text3);margin-left:6px">v${DASHBOARD_VERSION}</span></div>
+  <div class="sec-title">Settings</div>
   <div class="sec-title" style="font-size:15px;margin-bottom:4px;margin-top:8px">Updates</div>
+  <p class="sec-sub" style="margin-bottom:6px">Your version: v${DASHBOARD_VERSION}</p>
   <p class="sec-sub" style="margin-bottom:14px">Check for a newer version and install it with one click. Your music and settings are untouched.</p>
   <div id="upgrade-status" style="margin-bottom:10px"></div>
   <button class="btn btn-ghost" id="upgrade-btn" onclick="checkUpgrade()">

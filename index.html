@@ -323,7 +323,7 @@
 
 <script>
 // ââ STATE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-const DASHBOARD_VERSION = '1.0.1';
+const DASHBOARD_VERSION = '1.0.2';
 let GH = { token: localStorage.getItem('un_dash_token')||'', username: localStorage.getItem('un_dash_user')||'', repo: localStorage.getItem('un_dash_repo')||'music' };
 let artistData = null;
 let releases = []; // [{ id, type, data, path, _sha, _dirty }]
@@ -1780,7 +1780,7 @@ function settingsHTML() {
     </div>
     <div class="input-hint">Change this if you renamed your GitHub repo.</div>
   </div>
-  <div class="field"><label class="label">Token</label><input class="input" value="â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢" type="text" readonly autocomplete="off"></div>
+  <div class="field"><label class="label">Token</label><input class="input" value="****************" type="text" readonly autocomplete="off"></div>
   <button class="btn btn-danger" onclick="disconnect()" style="margin-top:8px">Disconnect GitHub</button>`;
 }
 

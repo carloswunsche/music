@@ -8,7 +8,8 @@
     "instagram": "https://instagram.com/carloswunsche"
   },
   "releases": [
-    "singles/singles.json"
+    "singles/singles.json",
+    "albums/album-1774157094740/album.json"
   ],
   "recommendations": [
     "https://julabrego.github.io/music/artist.json"

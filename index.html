@@ -318,8 +318,8 @@
 <div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:9px 18px;font-size:13px;font-weight:500;color:var(--text);z-index:400;opacity:0;pointer-events:none;transition:all .22s;white-space:nowrap;"></div>
 
 <script>
-// ââ STATE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-const DASHBOARD_VERSION = '1.1.0';
+// ── STATE ────────────────────────────────────────────────────────
+const DASHBOARD_VERSION = '1.0.1';
 let GH = { token: localStorage.getItem('un_dash_token')||'', username: localStorage.getItem('un_dash_user')||'', repo: localStorage.getItem('un_dash_repo')||'music' };
 let artistData = null;
 let releases = []; // [{ id, type, data, path, _sha, _dirty }]
@@ -327,7 +327,7 @@ let pendingUploads = {}; // key -> { b64, sha, path, filename }
 let currentSection = 'profile';
 let currentReleaseId = null;
 
-// ââ BOOT âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── BOOT ─────────────────────────────────────────────────────────
 async function boot() {
   if (GH.token && GH.username) { showMain(); await loadData(); }
   else showSetup();
@@ -349,7 +349,7 @@ function showMain() {
   renderSection('profile');
 }
 
-// ââ GITHUB API âââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── GITHUB API ───────────────────────────────────────────────────
 async function ghGet(path) {
   const r = await fetch(`https://api.github.com/repos/${GH.username}/${GH.repo}/contents/${path}`, {
     headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json' }
@@ -408,7 +408,7 @@ async function ghListFolder(folder) {
   } catch { return []; }
 }
 
-// ââ CONNECT ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── CONNECT ──────────────────────────────────────────────────────
 async function connectGitHub() {
   const token = document.getElementById('token-input').value.trim();
   const username = document.getElementById('username-input').value.trim();
@@ -430,7 +430,7 @@ async function connectGitHub() {
   } catch(e) { errMsg.textContent = e.message; errEl.classList.add('on'); }
 }
 
-// ââ LOAD DATA ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── LOAD DATA ────────────────────────────────────────────────────
 async function loadData() {
   setSaveStatus('loading', 'Loading...');
   releases = [];
@@ -458,7 +458,7 @@ async function loadData() {
       showImgPreview('avatar', `data:image/jpeg;base64,${b64}`);
     } catch {}
 
-    // Auto-create singles release if not present â write it to GitHub immediately
+    // Auto-create singles release if not present — write it to GitHub immediately
     const hasSingles = releases.some(r => r.type === 'singles');
     if (!hasSingles) {
       const singlesPath = 'singles/singles.json';
@@ -504,7 +504,7 @@ function guessType(path, data) {
   return 'album';
 }
 
-// ââ RELEASES NAV âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── RELEASES NAV ─────────────────────────────────────────────────
 function typeThumbIcon(type) {
   const icons = {
     singles:  { bg: 'rgba(123,94,167,0.18)', color: '#9b7fcb', svg: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>' },
@@ -542,7 +542,7 @@ function renderReleasesNav() {
   });
 }
 
-// ââ SECTIONS âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── SECTIONS ─────────────────────────────────────────────────────
 function showSection(name) {
   currentSection = name;
   currentReleaseId = null;
@@ -594,7 +594,7 @@ function renderSection(name) {
   if (name === 'links' && artistData) setTimeout(() => populateLinks(artistData.links || {}), 0);
 }
 
-// ââ PROFILE HTML âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── PROFILE HTML ─────────────────────────────────────────────────
 function profileHTML() {
   return `
   <div class="sec-title">Your profile</div>
@@ -609,7 +609,7 @@ function profileHTML() {
         Upload photo
       </button>
       <input type="file" id="avatar-file" class="file-input" accept="image/*" onchange="handleImgUpload('avatar','avatar.jpg',this)">
-      <p>Square, JPG or PNG, at least 400Ã400px.</p>
+      <p>Square, JPG or PNG, at least 400×400px.</p>
     </div>
   </div>
   <div class="field-row">
@@ -739,7 +739,7 @@ function addRecRow(url) {
 
 function updateAddRecBtn() {}
 
-// ââ LINKS HTML âââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── LINKS HTML ───────────────────────────────────────────────────
 function linksHTML() {
   return `
   <div class="sec-title">Social links</div>
@@ -767,7 +767,7 @@ function extractHandle(url) {
   return url.replace(/https?:\/\/(www\.)?(instagram|youtube|tiktok)\.com\//,'').replace(/^@/,'');
 }
 
-// ââ RELEASE SECTION ââââââââââââââââââââââââââââââââââââââââââââââ
+// ── RELEASE SECTION ──────────────────────────────────────────────
 function renderReleaseSection(id) {
   const rel = releases.find(r => r.id === id);
   if (!rel) return;
@@ -819,7 +819,7 @@ function renderReleaseSection(id) {
   }
 }
 
-// ââ ALBUM / EP / SINGLES HTML âââââââââââââââââââââââââââââââââââââ
+// ── ALBUM / EP / SINGLES HTML ─────────────────────────────────────
 function albumHTML(rel) {
   const id = rel.id;
   const d = rel.data;
@@ -1126,7 +1126,7 @@ function removeTrackFromRelease(relId, idx) {
   markDirty();
 }
 
-// ââ DRAG AND DROP REORDERING ââââââââââââââââââââââââââââââââââ
+// ── DRAG AND DROP REORDERING ──────────────────────────────────
 let dragSrc = null;
 
 function initDragDrop(containerId) {
@@ -1293,7 +1293,7 @@ function showConvertCard(relId, idx, file, sizeMB, mustConvert, customMsg) {
   stEl.innerHTML = `
     <div style="background:${mustConvert ? 'var(--danger-bg)' : 'var(--warning-bg)'};border:1px solid ${mustConvert ? 'rgba(224,108,108,.2)' : 'rgba(224,168,74,.25)'};border-radius:8px;padding:12px 14px;margin-top:8px;">
       <div style="font-size:12px;color:${mustConvert ? 'var(--danger)' : 'var(--warning)'};font-weight:600;margin-bottom:4px;">
-        ${mustConvert ? `â ï¸ ${sizeMB}MB - too large for GitHub (25MB limit)` : `â ï¸ ${sizeMB}MB - large file, listeners may experience slow loading`}
+        ${mustConvert ? `⚠️ ${sizeMB}MB - too large for GitHub (25MB limit)` : `⚠️ ${sizeMB}MB - large file, listeners may experience slow loading`}
       </div>
       <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">${tip}</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
@@ -1388,7 +1388,7 @@ async function convertAndLoad(relId, idx, file) {
     const baseName = file.name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9._-]/g,'').replace(/\.[^.]+$/, '');
     const newFile = new File([blob], `${baseName}.${outExt}`, { type: mimeType });
 
-    setProgress(100, `Done! ${(file.size/1024/1024).toFixed(1)}MB â ${sizeMB}MB`);
+    setProgress(100, `Done! ${(file.size/1024/1024).toFixed(1)}MB → ${sizeMB}MB`);
     await audioCtx.close();
 
     setTimeout(() => {
@@ -1470,7 +1470,7 @@ function handleReleaseCover(relId, input) {
   reader.readAsDataURL(file);
 }
 
-// ââ PLAYLIST HTML âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── PLAYLIST HTML ─────────────────────────────────────────────────
 function updateNavTitle(id, val) {
   const el = document.getElementById('nav-rel-' + id);
   if (el) { const n = el.querySelector('.nav-release-name'); if (n) n.textContent = val || 'Untitled'; }
@@ -1586,7 +1586,7 @@ function getAllTracks() {
   return all;
 }
 
-// ââ NEW RELEASE âââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── NEW RELEASE ───────────────────────────────────────────────────
 function openNewReleaseModal() { document.getElementById('new-release-modal').classList.add('on'); }
 function closeNewReleaseModal() { document.getElementById('new-release-modal').classList.remove('on'); }
 
@@ -1653,7 +1653,7 @@ async function deleteRelease(id) {
   toast('Album removed and files deleted Done');
 }
 
-// ââ GET RELEASE DATA FROM DOM âââââââââââââââââââââââââââââââââââââ
+// ── GET RELEASE DATA FROM DOM ─────────────────────────────────────
 function getReleaseData(rel) {
   const id = rel.id;
   const titleEl = document.getElementById(`rel-title-${id}`);
@@ -1726,7 +1726,7 @@ function getReleaseData(rel) {
   };
 }
 
-// ââ SHARE / SETTINGS HTML âââââââââââââââââââââââââââââââââââââââââ
+// ── SHARE / SETTINGS HTML ─────────────────────────────────────────
 function shareHTML() {
   const base = `https://${GH.username}.github.io/${GH.repo}`;
   const manifest = `${base}/artist.json`;
@@ -1750,7 +1750,7 @@ function shareHTML() {
 }
 function settingsHTML() {
   return `
-  <div class="sec-title">Settings <span style="font-size:12px;font-weight:400;color:var(--text3);margin-left:6px">v1.1.0</span></div>
+  <div class="sec-title">Settings <span style="font-size:12px;font-weight:400;color:var(--text3);margin-left:6px">v${DASHBOARD_VERSION}</span></div>
   <p class="sec-sub">Your current connection details.</p>
   <div class="field"><label class="label">Username</label><input class="input" value="${esc(GH.username)}" readonly></div>
   <div class="field">
@@ -1761,7 +1761,7 @@ function settingsHTML() {
     </div>
     <div class="input-hint">Change this if you renamed your GitHub repo.</div>
   </div>
-  <div class="field"><label class="label">Token</label><input class="input" value="â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢" type="text" readonly autocomplete="off"></div>
+  <div class="field"><label class="label">Token</label><input class="input" value="••••••••••••••••" type="text" readonly autocomplete="off"></div>
   <div class="divider"></div>
   <div class="sec-title" style="font-size:15px;margin-bottom:4px">Upgrade dashboard</div>
   <p class="sec-sub" style="margin-bottom:14px">Check for a newer version of the dashboard and upgrade with one click. Your music and settings are untouched.</p>
@@ -1839,7 +1839,7 @@ function updateRepo() {
   toast('Repository updated to "' + val + '" Done');
 }
 
-// ââ IMAGE UPLOAD ââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── IMAGE UPLOAD ──────────────────────────────────────────────────
 function handleImgUpload(key, path, input) {
   const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
@@ -1857,7 +1857,7 @@ function showImgPreview(key, src) {
   if (phEl) phEl.style.display = 'none';
 }
 
-// ââ SAVE ALL ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── SAVE ALL ──────────────────────────────────────────────────────
 async function saveAll() {
   const btn = document.getElementById('save-btn');
   btn.disabled = true; btn.innerHTML = `<div class="spin"></div> Saving...`;
@@ -1967,7 +1967,7 @@ function getProfileData() {
   };
 }
 
-// ââ UTILS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── UTILS ─────────────────────────────────────────────────────────
 function showSection_share() { renderSection('share'); }
 function updateShareUrls() {}
 function markDirty() {}

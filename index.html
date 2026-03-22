@@ -1071,7 +1071,7 @@ function trackRowHTML(relId, idx, track, isSingles=false) {
     <input type="hidden" id="tsrc-${relId}-${idx}" value="${esc(track.src||'')}">
     <input type="hidden" id="tdur-${relId}-${idx}" value="${track.duration||0}">
     <input type="hidden" id="tcover-${relId}-${idx}" value="${esc(track.cover||'')}">
-  </div>`;
+  </div></div>`;
 }
 
 function addTrackToRelease(relId) {

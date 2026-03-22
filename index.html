@@ -1702,6 +1702,8 @@ function getReleaseData(rel) {
 
     // Regular new-upload track
     const title = document.getElementById(`ttitle-${id}-${idx}`)?.value.trim()||'';
+    const srcRaw = document.getElementById(`tsrc-${id}-${idx}`)?.value;
+    console.log('[track]', idx, 'title=', JSON.stringify(title), 'src=', JSON.stringify(srcRaw), 'dur=', dur);
     const textPanel = document.getElementById(`lpanel-text-${id}-${idx}`);
     const lrcArea = document.getElementById(`tlyrics-lrc-${id}-${idx}`);
     const textArea = document.getElementById(`tlyrics-text-${id}-${idx}`);

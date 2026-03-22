@@ -266,7 +266,7 @@
         <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text)">Create a free GitHub account and token</div>
         <div class="setup-steps">
           <div class="setup-step"><div class="setup-step-num">1</div><div>Go to <a href="https://github.com/signup" target="_blank" style="color:var(--accent2)">github.com/signup</a> and create a free account <span style="color:var(--text3)">(skip if you have one)</span></div></div>
-          <div class="setup-step"><div class="setup-step-num">2</div><div>Open <a href="https://github.com/settings/tokens/new?description=Unmuted&scopes=repo" target="_blank" style="color:var(--accent2)">this link</a> to pre-fill a token for Unmuted</div></div>
+          <div class="setup-step"><div class="setup-step-num">2</div><div>Open <a href="https://github.com/settings/tokens/new?description=Unmuted&scopes=repo&default_expires_at=none" target="_blank" style="color:var(--accent2)">this link</a> to pre-fill a token for Unmuted</div></div>
           <div class="setup-step"><div class="setup-step-num">3</div><div>Set expiration to <strong>No expiration</strong>, scroll down, click <strong style="color:var(--green)">Generate token</strong></div></div>
           <div class="setup-step"><div class="setup-step-num">4</div><div>Copy the token that appears and paste it below</div></div>
         </div>
@@ -365,7 +365,7 @@
 
 <script>
 // ââ STATE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-const DASHBOARD_VERSION = '1.0.3';
+const DASHBOARD_VERSION = '1.0.0';
 let GH = { token: localStorage.getItem('un_dash_token')||'', username: localStorage.getItem('un_dash_user')||'', repo: localStorage.getItem('un_dash_repo')||'music' };
 let artistData = null;
 let releases = []; // [{ id, type, data, path, _sha, _dirty }]

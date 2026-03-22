@@ -1,5 +1,13 @@
 {
   "title": "Singles",
   "type": "singles",
-  "tracks": []
+  "tracks": [
+    {
+      "title": "This time",
+      "src": "this-time.mp3",
+      "duration": 230,
+      "cover": "",
+      "year": 2026
+    }
+  ]
 }

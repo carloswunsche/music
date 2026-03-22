@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdiNWVhNyIvPjxwYXRoIGQ9Ik0xNiA0djEwLjU1QTQgNCAwIDEgMCAxOCAxN1Y5aDRWNGgtNnoiIGZpbGw9IndoaXRlIi8+PC9zdmc+">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unmuted â Artist Dashboard</title>
+<title>Unmuted - Artist Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -247,8 +247,8 @@
     <p class="setup-sub">To save changes, you need a GitHub Personal Access Token. It only takes a minute.</p>
     <div class="setup-steps">
       <div class="setup-step"><div class="setup-step-num">1</div><div>Go to <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a></div></div>
-      <div class="setup-step"><div class="setup-step-num">2</div><div>Name it "Unmuted" â set expiration to <strong>No expiration</strong></div></div>
-      <div class="setup-step"><div class="setup-step-num">3</div><div>Tick the <strong>repo</strong> checkbox â that's the only permission needed</div></div>
+      <div class="setup-step"><div class="setup-step-num">2</div><div>Name it "Unmuted" - set expiration to <strong>No expiration</strong></div></div>
+      <div class="setup-step"><div class="setup-step-num">3</div><div>Tick the <strong>repo</strong> checkbox - that's the only permission needed</div></div>
       <div class="setup-step"><div class="setup-step-num">4</div><div>Click <strong>Generate token</strong> and paste it below</div></div>
     </div>
     <input type="text" style="display:none" aria-hidden="true">
@@ -286,6 +286,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       New release
     </button>
+    <div class="nav-section" style="margin-top:8px"></div>
     <button class="nav-item" id="nav-settings" onclick="showSection('settings')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
       Settings
@@ -430,7 +431,7 @@ async function connectGitHub() {
 
 // ââ LOAD DATA ââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function loadData() {
-  setSaveStatus('loading', 'Loadingâ¦');
+  setSaveStatus('loading', 'Loading...');
   releases = [];
   try {
     // Load artist.json
@@ -512,7 +513,7 @@ function renderReleasesNav() {
     </button>`;
   }).join('');
 
-  // Load cover thumbs â replaces icon when a cover exists (not for singles)
+  // Load cover thumbs - replaces icon when a cover exists (not for singles)
   releases.forEach(r => {
     if (r.type === 'singles') return;
     if (!r.data.cover) return;
@@ -555,7 +556,7 @@ function renderSection(name) {
 
   if (name === 'profile') {
     if (artistData) populateProfile(artistData);
-    // Restore avatar â use cached b64 if available, otherwise fetch
+    // Restore avatar - use cached b64 if available, otherwise fetch
     if (pendingUploads['avatar']?._b64cache) {
       showImgPreview('avatar', `data:image/jpeg;base64,${pendingUploads['avatar']._b64cache}`);
     } else {
@@ -586,7 +587,7 @@ function profileHTML() {
         Upload photo
       </button>
       <input type="file" id="avatar-file" class="file-input" accept="image/*" onchange="handleImgUpload('avatar','avatar.jpg',this)">
-      <p>Square, JPG or PNG, at least 400Ã400px.</p>
+      <p>Square, JPG or PNG, at least 400x400px.</p>
     </div>
   </div>
   <div class="field-row">
@@ -594,7 +595,7 @@ function profileHTML() {
     <div class="field" style="margin-bottom:0"><label class="label">Location <span>(optional)</span></label><input class="input" id="f-location" type="text" oninput="markDirty()" placeholder="Miami, FL"></div>
   </div>
   <div class="divider"></div>
-  <div class="field"><label class="label">Bio</label><textarea class="textarea" id="f-bio" oninput="markDirty()" placeholder="Tell listeners about yourself and your musicâ¦"></textarea></div>
+  <div class="field"><label class="label">Bio</label><textarea class="textarea" id="f-bio" oninput="markDirty()" placeholder="Tell listeners about yourself and your music..."></textarea></div>
 `;
 }
 
@@ -824,7 +825,7 @@ function albumHTML(rel) {
         Upload cover art
       </button>
       <input type="file" id="cover-file-${id}" class="file-input" accept="image/*" onchange="handleReleaseCover('${id}',this)">
-      <p>Square JPG or PNG, 500Ã500px minimum.</p>
+      <p>Square JPG or PNG, 500x500px minimum.</p>
     </div>
   </div>
   <div class="field-row">
@@ -987,7 +988,7 @@ function trackRowHTML(relId, idx, track, isSingles=false) {
             </select>
           </div>
         </div>` : `
-        <!-- No singles yet â just show upload -->
+        <!-- No singles yet - just show upload -->
         <div>
           <label class="label" style="margin-bottom:4px">Audio file</label>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -1030,7 +1031,7 @@ function trackRowHTML(relId, idx, track, isSingles=false) {
         </div>
       </div>
       <div id="lpanel-text-${relId}-${idx}" style="display:${lyricsMode==='text'?'block':'none'}">
-        <textarea class="textarea" id="tlyrics-text-${relId}-${idx}" style="min-height:80px;font-size:12px;line-height:1.7" placeholder="Paste or type the lyrics hereâ¦" oninput="markDirty()">${hasLrc ? '' : esc(track.lyrics||'')}</textarea>
+        <textarea class="textarea" id="tlyrics-text-${relId}-${idx}" style="min-height:80px;font-size:12px;line-height:1.7" placeholder="Paste or type the lyrics here..." oninput="markDirty()">${hasLrc ? '' : esc(track.lyrics||'')}</textarea>
       </div>
       <div id="lpanel-lrc-${relId}-${idx}" style="display:${lyricsMode==='lrc'?'block':'none'}">
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
@@ -1153,8 +1154,8 @@ function renumberReleaseTracks(relId) {
   });
 }
 
-const GH_MAX_BYTES = 25 * 1024 * 1024;  // 25MB â GitHub safe limit
-const GH_WARN_BYTES = 10 * 1024 * 1024;  // 10MB â suggest conversion
+const GH_MAX_BYTES = 25 * 1024 * 1024;  // 25MB - GitHub safe limit
+const GH_WARN_BYTES = 10 * 1024 * 1024;  // 10MB - suggest conversion
 
 function handleTrackFile(relId, idx, input) {
   const file = input.files[0]; if (!file) return;
@@ -1188,18 +1189,18 @@ function handleTrackFile(relId, idx, input) {
         const isHighRes = buf.sampleRate > 48000 || buf.numberOfChannels > 0;
         ctx.close();
         if (buf.sampleRate > 48000) {
-          // High-res â must convert for browser compatibility
+          // High-res - must convert for browser compatibility
           const stEl2 = getTrackEl('tstatus', relId, idx);
           if (stEl2) stEl2.innerHTML = '';
-          showConvertCard(relId, idx, file, sizeMB, true, `High-res audio detected (${buf.sampleRate/1000}kHz) â browsers can't play this directly.`);
+          showConvertCard(relId, idx, file, sizeMB, true, `High-res audio detected (${buf.sampleRate/1000}kHz) - browsers can't play this directly.`);
           return;
         }
-        // Standard FLAC â set duration and queue
+        // Standard FLAC - set duration and queue
         const secs = Math.round(buf.duration);
         setDurationDisplay(relId, idx, secs);
         proceedWithUpload();
       }).catch(() => {
-        // Can't decode â likely high-res, show convert card
+        // Can't decode - likely high-res, show convert card
         ctx.close();
         showConvertCard(relId, idx, file, sizeMB, true, 'This FLAC format may not be supported by browsers. Converting is recommended.');
       });
@@ -1270,7 +1271,7 @@ function showConvertCard(relId, idx, file, sizeMB, mustConvert, customMsg) {
   stEl.innerHTML = `
     <div style="background:${mustConvert ? 'var(--danger-bg)' : 'var(--warning-bg)'};border:1px solid ${mustConvert ? 'rgba(224,108,108,.2)' : 'rgba(224,168,74,.25)'};border-radius:8px;padding:12px 14px;margin-top:8px;">
       <div style="font-size:12px;color:${mustConvert ? 'var(--danger)' : 'var(--warning)'};font-weight:600;margin-bottom:4px;">
-        ${mustConvert ? `â ï¸ ${sizeMB}MB â too large for GitHub (25MB limit)` : `â ï¸ ${sizeMB}MB â large file, listeners may experience slow loading`}
+        ${mustConvert ? `â ï¸ ${sizeMB}MB - too large for GitHub (25MB limit)` : `â ï¸ ${sizeMB}MB - large file, listeners may experience slow loading`}
       </div>
       <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">${tip}</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
@@ -1281,7 +1282,7 @@ function showConvertCard(relId, idx, file, sizeMB, mustConvert, customMsg) {
         ${mustConvert ? '' : `<button class="btn btn-ghost btn-sm" id="upload-anyway-btn-${relId}-${idx}" onclick="uploadAnyway('${relId}',${idx},this._file,'${folder}','${baseName}.${ext}')">Upload as-is</button>`}
       </div>
       <div id="convert-progress-${relId}-${idx}" style="display:none;margin-top:10px;">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;" id="convert-label-${relId}-${idx}">Convertingâ¦</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;" id="convert-label-${relId}-${idx}">Converting...</div>
         <div style="background:var(--bg3);border-radius:4px;height:5px;overflow:hidden;">
           <div id="convert-bar-${relId}-${idx}" style="height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width .3s;"></div>
         </div>
@@ -1303,7 +1304,7 @@ async function convertAndLoad(relId, idx, file) {
   const progressWrap = document.getElementById(`convert-progress-${relId}-${idx}`);
   const progressBar = document.getElementById(`convert-bar-${relId}-${idx}`);
   const progressLabel = document.getElementById(`convert-label-${relId}-${idx}`);
-  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spin"></div> Convertingâ¦'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spin"></div> Converting...'; }
   if (progressWrap) progressWrap.style.display = 'block';
 
   try {
@@ -1312,11 +1313,11 @@ async function convertAndLoad(relId, idx, file) {
       if (progressLabel) progressLabel.textContent = label;
     };
 
-    setProgress(10, 'Decoding audioâ¦');
+    setProgress(10, 'Decoding audio...');
     const arrayBuffer = await file.arrayBuffer();
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-    setProgress(40, 'Encoding to OGG Opusâ¦');
+    setProgress(40, 'Encoding to OGG Opus...');
 
     // Pick best supported format
     const mimeType = MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')
@@ -1346,12 +1347,12 @@ async function convertAndLoad(relId, idx, file) {
     const tick = setInterval(() => {
       elapsed += 0.25;
       const pct = Math.min(90, 40 + (elapsed / duration) * 50);
-      setProgress(Math.round(pct), `Encodingâ¦ ${Math.round((elapsed/duration)*100)}%`);
+      setProgress(Math.round(pct), `Encoding... ${Math.round((elapsed/duration)*100)}%`);
       if (elapsed >= duration) { clearInterval(tick); recorder.stop(); }
     }, 250);
 
     await done;
-    setProgress(95, 'Finalisingâ¦');
+    setProgress(95, 'Finalising...');
 
     const blob = new Blob(chunks, { type: mimeType });
     const sizeMB = (blob.size / 1024 / 1024).toFixed(1);
@@ -1371,7 +1372,7 @@ async function convertAndLoad(relId, idx, file) {
     setTimeout(() => {
       document.getElementById(`tstatus-${relId}-${idx}`).innerHTML = '';
       queueTrackFile(relId, idx, newFile, folder, `${baseName}.${outExt}`);
-      toast(`Converted to ${outExt.toUpperCase()} â ${sizeMB}MB â`, 'success');
+      toast(`Converted to ${outExt.toUpperCase()} - ${sizeMB}MB Done`, 'success');
     }, 800);
 
   } catch(e) {
@@ -1396,7 +1397,7 @@ function queueTrackFile(relId, idx, file, folder, filename) {
   if (stEl) stEl.innerHTML = `
     <div class="track-status uploading">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      Ready (${(file.size/1024/1024).toFixed(1)}MB) â will upload on Save
+      Ready (${(file.size/1024/1024).toFixed(1)}MB) - will upload on Save
     </div>`;
   const reader = new FileReader();
   reader.onload = e => {
@@ -1507,7 +1508,7 @@ function playlistHTML(rel) {
 }
 
 function playlistTrackRow(relId, idx, track, allTracks) {
-  const opts = allTracks.map(t => `<option value="${esc(t.src)}" data-dur="${t.duration||0}" ${t.src===track.src?'selected':''}>${esc(t.title)} â ${esc(t.from)}</option>`).join('');
+  const opts = allTracks.map(t => `<option value="${esc(t.src)}" data-dur="${t.duration||0}" ${t.src===track.src?'selected':''}>${esc(t.title)} - ${esc(t.from)}</option>`).join('');
   return `<div class="playlist-track" id="ptitem-${relId}-${idx}">
     <div class="drag-handle" draggable="true">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8-15a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
@@ -1515,7 +1516,7 @@ function playlistTrackRow(relId, idx, track, allTracks) {
     <div class="playlist-track-num">${idx+1}</div>
     <div class="playlist-track-info" style="flex:1">
       <select class="input" style="height:34px;font-size:12px" onchange="onPlaylistTrackChange('${relId}',${idx},this)">
-        <option value="">â pick a track â</option>
+        <option value="">- pick a track -</option>
         ${opts}
       </select>
     </div>
@@ -1530,7 +1531,7 @@ function onPlaylistTrackChange(relId, idx, sel) {
   const opt = sel.options[sel.selectedIndex];
   document.getElementById(`psrc-${relId}-${idx}`).value = sel.value;
   document.getElementById(`pdur-${relId}-${idx}`).value = opt.dataset.dur || 0;
-  document.getElementById(`ptitle-${relId}-${idx}`).value = opt.text.split(' â ')[0];
+  document.getElementById(`ptitle-${relId}-${idx}`).value = opt.text.split(' - ')[0];
   markDirty();
 }
 
@@ -1584,14 +1585,14 @@ function createRelease(type) {
   renderReleasesNav();
   showRelease(id);
   markDirty();
-  toast(`${type === 'playlist' ? 'Playlist' : type === 'album' ? 'Album' : 'Singles'} created â fill in the details and hit Save`);
+  toast(`${type === 'playlist' ? 'Playlist' : type === 'album' ? 'Album' : 'Singles'} created - fill in the details and hit Save`);
 }
 
 async function deleteRelease(id) {
   const rel = releases.find(r => r.id === id);
   if (!rel) return;
 
-  // Playlists only reference tracks from other releases â just remove from list, no file deletion
+  // Playlists only reference tracks from other releases - just remove from list, no file deletion
   if (rel.type === 'playlist') {
   
     releases = releases.filter(r => r.id !== id);
@@ -1610,9 +1611,9 @@ async function deleteRelease(id) {
   renderReleasesNav();
   showSection('profile');
   markDirty();
-  toast('Removing album and deleting filesâ¦');
+  toast('Removing album and deleting files...');
 
-  // Delete files in the release folder â skip anything under singles/
+  // Delete files in the release folder - skip anything under singles/
   const folder = rel.path.substring(0, rel.path.lastIndexOf('/'));
   if (folder && !folder.startsWith('singles')) {
     const files = await ghListFolder(folder);
@@ -1627,7 +1628,7 @@ async function deleteRelease(id) {
   const jsonSha = rel._sha || await ghGetSha(rel.path);
   if (jsonSha) await ghDelete(rel.path, jsonSha, `Remove ${rel.data.title||'album'}`);
 
-  toast('Album removed and files deleted â');
+  toast('Album removed and files deleted Done');
 }
 
 // ââ GET RELEASE DATA FROM DOM âââââââââââââââââââââââââââââââââââââ
@@ -1656,12 +1657,12 @@ function getReleaseData(rel) {
     const src = document.getElementById(`tsrc-${id}-${idx}`)?.value.trim()||'';
     const dur = parseInt(document.getElementById(`tdur-${id}-${idx}`)?.value||'0');
 
-    // Detect if this track is "from singles" â pick panel is visible
+    // Detect if this track is "from singles" - pick panel is visible
     const pickPanel = document.getElementById(`tsrc-pick-${id}-${idx}`);
     const isFromSingle = pickPanel && pickPanel.style.display !== 'none';
 
     if (isFromSingle) {
-      // Track sourced from an existing single â get title from the selected option
+      // Track sourced from an existing single - get title from the selected option
       const sel = pickPanel.querySelector('select');
       const opt = sel && sel.options[sel.selectedIndex];
       const pickedSrc = opt ? opt.dataset.src : src;
@@ -1706,14 +1707,14 @@ function shareHTML() {
   <div class="sec-title">Share your page</div>
   <p class="sec-sub">Share these links so listeners can add you on Unmuted.</p>
   <div class="share-card" style="border-color:var(--accent);background:rgba(123,94,167,0.06)">
-    <div class="share-label" style="color:var(--accent2)">Your Unmuted link â share this everywhere</div>
+    <div class="share-label" style="color:var(--accent2)">Your Unmuted link - share this everywhere</div>
     <div class="share-url"><span id="url-deep">${deep}</span>
       <button class="btn btn-ghost btn-sm btn-icon" onclick="copyText('url-deep')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
     </div>
     <div class="input-hint">Put this in your Instagram bio, tweet it, or add it to your QR code. When someone taps it, Unmuted opens and asks if they want to add you.</div>
   </div>
   <div class="share-card">
-    <div class="share-label">Manifest URL â open in browser to verify your page is live</div>
+    <div class="share-label">Manifest URL - open in browser to verify your page is live</div>
     <div class="share-url"><span id="url-manifest">${manifest}</span>
       <button class="btn btn-ghost btn-sm btn-icon" onclick="copyText('url-manifest')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
     </div>
@@ -1732,7 +1733,7 @@ function settingsHTML() {
     </div>
     <div class="input-hint">Change this if you renamed your GitHub repo.</div>
   </div>
-  <div class="field"><label class="label">Token</label><input class="input" value="â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢â¢" type="text" readonly autocomplete="off"></div>
+  <div class="field"><label class="label">Token</label><input class="input" value="----------------" type="text" readonly autocomplete="off"></div>
   <div class="divider"></div>
   <div class="sec-title" style="font-size:15px;margin-bottom:4px">Upgrade dashboard</div>
   <p class="sec-sub" style="margin-bottom:14px">Check for a newer version of the dashboard and upgrade with one click. Your music and settings are untouched.</p>
@@ -1747,7 +1748,7 @@ async function checkUpgrade() {
   const btn = document.getElementById('upgrade-check-btn');
   const status = document.getElementById('upgrade-status');
   btn.disabled = true;
-  btn.innerHTML = '<div class="spin" style="display:inline-block"></div> Checkingâ¦';
+  btn.innerHTML = '<div class="spin" style="display:inline-block"></div> Checking...';
 
   try {
     // Fetch latest index.html from the main Unmuted repo
@@ -1768,7 +1769,7 @@ async function checkUpgrade() {
       }
     } catch(e) { /* index.html might not exist yet */ }
 
-    // Different version â show upgrade button
+    // Different version - show upgrade button
     status.innerHTML = '<div style="font-size:13px;color:var(--accent2);margin-bottom:10px">&#10022; A new version is available!</div>'
       + '<button class="btn btn-primary" onclick="doUpgrade(\'' + meta.sha + '\')" id="upgrade-do-btn">'
       + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
@@ -1788,14 +1789,14 @@ async function checkUpgrade() {
 
 async function doUpgrade(remoteSha) {
   const btn = document.getElementById('upgrade-do-btn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spin" style="display:inline-block"></div> Installingâ¦'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spin" style="display:inline-block"></div> Installing...'; }
   const status = document.getElementById('upgrade-status');
 
   try {
-    if (!window._upgradeB64) throw new Error('No update data â click "Check for updates" first');
+    if (!window._upgradeB64) throw new Error('No update data - click "Check for updates" first');
     // Write the new index.html to the artist's repo
     await ghPut('index.html', atob(window._upgradeB64.replace(/\n/g,'')), window._upgradeSha, 'Upgrade Unmuted dashboard');
-    status.innerHTML = '<div style="font-size:13px;color:var(--green)">â Upgrade installed! GitHub Pages will update in ~2 minutes. Refresh this page to use the new version.</div>';
+    status.innerHTML = '<div style="font-size:13px;color:var(--green)">Done Upgrade installed! GitHub Pages will update in ~2 minutes. Refresh this page to use the new version.</div>';
   } catch(e) {
     status.innerHTML = '<div style="font-size:13px;color:var(--danger)">Upgrade failed: ' + e.message + '</div>';
     if (btn) { btn.disabled = false; btn.innerHTML = 'Install update'; }
@@ -1807,7 +1808,7 @@ function updateRepo() {
   if (!val) return;
   GH.repo = val;
   localStorage.setItem('un_dash_repo', val);
-  toast('Repository updated to "' + val + '" â');
+  toast('Repository updated to "' + val + '" Done');
 }
 
 // ââ IMAGE UPLOAD ââââââââââââââââââââââââââââââââââââââââââââââââââ
@@ -1831,8 +1832,8 @@ function showImgPreview(key, src) {
 // ââ SAVE ALL ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function saveAll() {
   const btn = document.getElementById('save-btn');
-  btn.disabled = true; btn.innerHTML = `<div class="spin"></div> Savingâ¦`;
-  setSaveStatus('saving','Savingâ¦');
+  btn.disabled = true; btn.innerHTML = `<div class="spin"></div> Saving...`;
+  setSaveStatus('saving','Saving...');
   try {
     // Collect current DOM state for active release
     if (currentReleaseId) {
@@ -1868,7 +1869,7 @@ async function saveAll() {
       // JSON.stringify handles escaping of newlines, special chars, etc.
       const cleanData = JSON.parse(JSON.stringify({ ...data, _sha: undefined, _dirty: undefined }));
       const json = JSON.stringify(cleanData, null, 2);
-      // Quick sanity check â parse it back before sending
+      // Quick sanity check - parse it back before sending
       try { JSON.parse(json); } catch(e) { toast('JSON error in ' + (rel.data.title||rel.id) + ': ' + e.message, 'danger'); continue; }
       const sha = rel._sha || await ghGetSha(rel.path);
       const result = await ghPut(rel.path, json, sha, `Update ${rel.data.title||rel.id}`);
@@ -1886,7 +1887,7 @@ async function saveAll() {
     if (document.getElementById('l-instagram')) populateLinks(artistData.links || {});
 
     renderReleasesNav();
-    setSaveStatus('saved','â Saved');
+    setSaveStatus('saved','Done Saved');
     setTimeout(()=>setSaveStatus('',''),3000);
     toast('All changes saved! ð Live in ~2 minutes.');
   } catch(e) {
@@ -1924,7 +1925,7 @@ function getProfileData() {
     links = artistData?.links || {};
   }
 
-  // Read recommendations â inputs are inside .track-item children
+  // Read recommendations - inputs are inside .track-item children
   const recsList = document.getElementById('recs-list');
   const recommendations = recsList
     ? Array.from(recsList.querySelectorAll('input[type="text"]')).map(i => i.value.trim()).filter(Boolean)
@@ -1943,7 +1944,7 @@ function showSection_share() { renderSection('share'); }
 function updateShareUrls() {}
 function markDirty() {}
 function setSaveStatus(type, msg) {
-  // Status is now shown via the save button label â no separate text needed
+  // Status is now shown via the save button label - no separate text needed
 }
 function copyDeepLink() {
   const base = `https://${GH.username}.github.io/${GH.repo}`;

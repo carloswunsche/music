@@ -457,14 +457,30 @@ async function loadData() {
       showImgPreview('avatar', `data:image/jpeg;base64,${b64}`);
     } catch {}
 
-    // Auto-create singles release if not present
+    // Auto-create singles release if not present — write it to GitHub immediately
     const hasSingles = releases.some(r => r.type === 'singles');
     if (!hasSingles) {
       const singlesPath = 'singles/singles.json';
       const singlesData = { title: 'Singles', type: 'singles', tracks: [] };
       const singlesId = 'singles-singles';
-      releases.unshift({ id: singlesId, type: 'singles', data: singlesData, path: singlesPath, _sha: null, _dirty: true });
-      markDirty();
+      try {
+        const json = JSON.stringify(singlesData, null, 2);
+        const result = await ghPut(singlesPath, json, null, 'Initialize singles');
+        releases.unshift({ id: singlesId, type: 'singles', data: singlesData, path: singlesPath, _sha: result.content.sha });
+        // Also update artist.json to include it
+        if (!artistData.releases) artistData.releases = [];
+        if (!artistData.releases.includes(singlesPath)) {
+          artistData.releases.unshift(singlesPath);
+          const aSha = artistData._sha || await ghGetSha('artist.json');
+          const aJson = JSON.stringify({ ...artistData, _sha: undefined }, null, 2);
+          const aResult = await ghPut('artist.json', aJson, aSha, 'Add singles to releases');
+          artistData._sha = aResult.content.sha;
+        }
+      } catch(e) {
+        // If we can't write (e.g. no token yet), just add locally
+        releases.unshift({ id: singlesId, type: 'singles', data: singlesData, path: singlesPath, _sha: null, _dirty: true });
+        markDirty();
+      }
     } else {
       // Ensure singles is always first in the nav
       const idx = releases.findIndex(r => r.type === 'singles');

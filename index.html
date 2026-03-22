@@ -1737,7 +1737,73 @@ function settingsHTML() {
     <div class="input-hint">Change this if you renamed your GitHub repo.</div>
   </div>
   <div class="field"><label class="label">Token</label><input class="input" value="••••••••••••••••" type="text" readonly autocomplete="off"></div>
-  <button class="btn btn-danger" onclick="disconnect()" style="margin-top:8px">Disconnect GitHub</button>`;
+  <div class="divider"></div>
+  <div class="sec-title" style="font-size:15px;margin-bottom:4px">Upgrade dashboard</div>
+  <p class="sec-sub" style="margin-bottom:14px">Check for a newer version of the dashboard and upgrade with one click. Your music and settings are untouched.</p>
+  <div id="upgrade-status" style="margin-bottom:12px"></div>
+  <button class="btn btn-ghost" onclick="checkUpgrade()" id="upgrade-check-btn">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    Check for updates
+  </button>`;
+}
+
+async function checkUpgrade() {
+  const btn = document.getElementById('upgrade-check-btn');
+  const status = document.getElementById('upgrade-status');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin" style="display:inline-block"></div> Checking…';
+
+  try {
+    // Fetch latest dashboard.html from the main Unmuted repo
+    const r = await fetch('https://api.github.com/repos/carloswunsche/unmuted/contents/dashboard.html');
+    if (!r.ok) throw new Error('Could not reach the Unmuted repo (' + r.status + ')');
+    const meta = await r.json();
+
+    // Get current file sha from the artist's own repo
+    let currentSha = null;
+    try {
+      const cur = await ghGet('index.html');
+      currentSha = cur.sha;
+      if (cur.sha === meta.sha) {
+        status.innerHTML = '<div style="font-size:13px;color:var(--green)">&#10003; You are up to date!</div>';
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Check for updates';
+        return;
+      }
+    } catch(e) { /* index.html might not exist yet */ }
+
+    // Different version — show upgrade button
+    status.innerHTML = '<div style="font-size:13px;color:var(--accent2);margin-bottom:10px">&#10022; A new version is available!</div>'
+      + '<button class="btn btn-primary" onclick="doUpgrade(\'' + meta.sha + '\')" id="upgrade-do-btn">'
+      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+      + ' Install update</button>';
+    // Store the content for install
+    window._upgradeB64 = meta.content;
+    window._upgradeSha = currentSha;
+
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Check for updates';
+  } catch(e) {
+    status.innerHTML = '<div style="font-size:13px;color:var(--danger)">' + e.message + '</div>';
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Check for updates';
+  }
+}
+
+async function doUpgrade(remoteSha) {
+  const btn = document.getElementById('upgrade-do-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spin" style="display:inline-block"></div> Installing…'; }
+  const status = document.getElementById('upgrade-status');
+
+  try {
+    if (!window._upgradeB64) throw new Error('No update data — click "Check for updates" first');
+    // Write the new dashboard.html as index.html in the artist's repo
+    await ghPut('index.html', atob(window._upgradeB64.replace(/\n/g,'')), window._upgradeSha, 'Upgrade Unmuted dashboard');
+    status.innerHTML = '<div style="font-size:13px;color:var(--green)">✓ Upgrade installed! GitHub Pages will update in ~2 minutes. Refresh this page to use the new version.</div>';
+  } catch(e) {
+    status.innerHTML = '<div style="font-size:13px;color:var(--danger)">Upgrade failed: ' + e.message + '</div>';
+    if (btn) { btn.disabled = false; btn.innerHTML = 'Install update'; }
+  }
 }
 
 function updateRepo() {

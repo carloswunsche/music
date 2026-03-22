@@ -323,6 +323,7 @@
 
 <script>
 // ── STATE ────────────────────────────────────────────────────────
+const DASHBOARD_VERSION = '1.0.0';
 let GH = { token: localStorage.getItem('un_dash_token')||'', username: localStorage.getItem('un_dash_user')||'', repo: localStorage.getItem('un_dash_repo')||'music' };
 let artistData = null;
 let releases = []; // [{ id, type, data, path, _sha, _dirty }]
@@ -1758,7 +1759,16 @@ function shareHTML() {
 }
 function settingsHTML() {
   return `
-  <div class="sec-title">Settings</div>
+  <div class="sec-title">Settings <span style="font-size:12px;font-weight:400;color:var(--text3);margin-left:6px">v${DASHBOARD_VERSION}</span></div>
+  <div class="sec-title" style="font-size:15px;margin-bottom:4px;margin-top:8px">Updates</div>
+  <p class="sec-sub" style="margin-bottom:14px">Check for a newer version and install it with one click. Your music and settings are untouched.</p>
+  <div id="upgrade-status" style="margin-bottom:10px"></div>
+  <button class="btn btn-ghost" id="upgrade-btn" onclick="checkUpgrade()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    Check for updates
+  </button>
+  <div class="divider"></div>
+  <div class="sec-title" style="font-size:15px;margin-bottom:4px">GitHub</div>
   <p class="sec-sub">Your current connection details.</p>
   <div class="field"><label class="label">Username</label><input class="input" value="${esc(GH.username)}" readonly></div>
   <div class="field">
@@ -1943,6 +1953,63 @@ function copyDeepLink() {
 function copyText(elId) {
   navigator.clipboard.writeText(document.getElementById(elId).textContent).then(()=>toast('Copied!'));
 }
+async function checkUpgrade() {
+  const btn = document.getElementById('upgrade-btn');
+  const status = document.getElementById('upgrade-status');
+  if (!btn || !status) return;
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin" style="display:inline-block"></div> Checking...';
+
+  try {
+    // Fetch latest index.html from the public Unmuted repo (no auth needed)
+    const r = await fetch('https://api.github.com/repos/carloswunsche/unmuted/contents/index.html');
+    if (!r.ok) throw new Error('Could not reach the Unmuted repo (' + r.status + ')');
+    const meta = await r.json();
+
+    // Extract version from remote file
+    const remoteContent = atob(meta.content.replace(/[\n\r]/g, ''));
+    const remoteMatch = remoteContent.match(/DASHBOARD_VERSION\s*=\s*'([^']+)'/);
+    const remoteVer = remoteMatch ? remoteMatch[1] : null;
+
+    if (!remoteVer) throw new Error('Could not read version from remote file.');
+
+    if (remoteVer === DASHBOARD_VERSION) {
+      status.innerHTML = '<div style="font-size:13px;color:var(--green)">&#10003; You are up to date (v' + DASHBOARD_VERSION + ')</div>';
+    } else {
+      // Store for install
+      window._upgradeContent = meta.content;
+      status.innerHTML = '<div style="font-size:13px;color:var(--accent2);margin-bottom:10px">New version available: v' + DASHBOARD_VERSION + ' &#8594; v' + remoteVer + '</div>'
+        + '<button class="btn btn-primary btn-sm" id="install-btn" onclick="doUpgrade()">'
+        + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+        + ' Install v' + remoteVer + '</button>';
+    }
+  } catch(e) {
+    status.innerHTML = '<div style="font-size:13px;color:var(--danger)">' + e.message + '</div>';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Check for updates';
+  }
+}
+
+async function doUpgrade() {
+  const installBtn = document.getElementById('install-btn');
+  const status = document.getElementById('upgrade-status');
+  if (installBtn) { installBtn.disabled = true; installBtn.innerHTML = '<div class="spin" style="display:inline-block"></div> Installing...'; }
+
+  try {
+    if (!window._upgradeContent) throw new Error('No update data. Click "Check for updates" first.');
+    // Get current sha of index.html in artist repo
+    let currentSha = null;
+    try { const cur = await ghGet('index.html'); currentSha = cur.sha; } catch(e) {}
+    // Write new index.html
+    await ghPut('index.html', atob(window._upgradeContent.replace(/[\n\r]/g, '')), currentSha, 'Upgrade Unmuted dashboard');
+    status.innerHTML = '<div style="font-size:13px;color:var(--green)">&#10003; Upgrade installed! GitHub Pages will rebuild in ~2 minutes.<br>Refresh this page to use the new version.</div>';
+  } catch(e) {
+    status.innerHTML = '<div style="font-size:13px;color:var(--danger)">Upgrade failed: ' + e.message + '</div>';
+    if (installBtn) { installBtn.disabled = false; installBtn.innerHTML = 'Install update'; }
+  }
+}
+
 function disconnect() {
   if (!confirm('Disconnect GitHub?')) return;
   ['un_dash_token','un_dash_user','un_dash_repo'].forEach(k=>localStorage.removeItem(k));

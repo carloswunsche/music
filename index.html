@@ -1673,6 +1673,13 @@ function getReleaseData(rel) {
 
   const isSingles = rel.type === 'singles';
   const tracks = [];
+  // If this release is not currently displayed, use existing data
+  console.log('[getReleaseData] id=', id, 'currentReleaseId=', currentReleaseId, 'titems=', document.querySelectorAll(`[id^="titem-${id}-"]`).length);
+  if (currentReleaseId !== id) return {
+    ...rel.data,
+    _sha: undefined,
+    _dirty: undefined
+  };
   document.querySelectorAll(`[id^="titem-${id}-"]`).forEach(el => {
     const idx = el.dataset.idx;
     const src = document.getElementById(`tsrc-${id}-${idx}`)?.value.trim()||'';
@@ -1886,7 +1893,8 @@ async function saveAll() {
 
     // 3. Save all release JSON files
     for (const rel of releases) {
-      const data = currentReleaseId === rel.id ? getReleaseData(rel) : rel.data;
+      const data = getReleaseData(rel); // always read from DOM if visible, else rel.data
+      console.log("[SAVE] release", rel.id, "currentReleaseId=", currentReleaseId, "tracks=", JSON.stringify(data.tracks?.length), "data=", JSON.stringify(data).slice(0,200));
       // JSON.stringify handles escaping of newlines, special chars, etc.
       const cleanData = JSON.parse(JSON.stringify({ ...data, _sha: undefined, _dirty: undefined }));
       const json = JSON.stringify(cleanData, null, 2);

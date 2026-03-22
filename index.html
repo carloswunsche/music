@@ -1754,8 +1754,8 @@ async function checkUpgrade() {
   btn.innerHTML = '<div class="spin" style="display:inline-block"></div> Checking…';
 
   try {
-    // Fetch latest dashboard.html from the main Unmuted repo
-    const r = await fetch('https://api.github.com/repos/carloswunsche/unmuted/contents/dashboard.html');
+    // Fetch latest index.html from the main Unmuted repo
+    const r = await fetch('https://api.github.com/repos/carloswunsche/unmuted/contents/index.html');
     if (!r.ok) throw new Error('Could not reach the Unmuted repo (' + r.status + ')');
     const meta = await r.json();
 
@@ -1797,7 +1797,7 @@ async function doUpgrade(remoteSha) {
 
   try {
     if (!window._upgradeB64) throw new Error('No update data — click "Check for updates" first');
-    // Write the new dashboard.html as index.html in the artist's repo
+    // Write the new index.html to the artist's repo
     await ghPut('index.html', atob(window._upgradeB64.replace(/\n/g,'')), window._upgradeSha, 'Upgrade Unmuted dashboard');
     status.innerHTML = '<div style="font-size:13px;color:var(--green)">✓ Upgrade installed! GitHub Pages will update in ~2 minutes. Refresh this page to use the new version.</div>';
   } catch(e) {

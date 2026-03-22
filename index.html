@@ -1761,7 +1761,7 @@ async function checkUpgrade() {
       const cur = await ghGet('index.html');
       currentSha = cur.sha;
       if (cur.sha === meta.sha) {
-        status.innerHTML = '<div style="font-size:13px;color:var(--green)">â You are up to date!</div>';
+        status.innerHTML = '<div style="font-size:13px;color:var(--green)">\u2713 You are up to date!</div>';
         btn.disabled = false;
         btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Check for updates';
         return;
@@ -1769,7 +1769,7 @@ async function checkUpgrade() {
     } catch(e) { /* index.html might not exist yet */ }
 
     // Different version - show upgrade button
-    status.innerHTML = '<div style="font-size:13px;color:var(--accent2);margin-bottom:10px">â¦ A new version is available!</div>'
+    status.innerHTML = '<div style="font-size:13px;color:var(--accent2);margin-bottom:10px">\u2726 A new version is available!</div>'
       + '<button class="btn btn-primary" onclick="doUpgrade(\'' + meta.sha + '\')" id="upgrade-do-btn">'
       + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
       + ' Install update</button>';
@@ -1888,7 +1888,7 @@ async function saveAll() {
     renderReleasesNav();
     setSaveStatus('saved','Done Saved');
     setTimeout(()=>setSaveStatus('',''),3000);
-    toast('All changes saved! ð Live in ~2 minutes.');
+    toast('All changes saved! \uD83C\uDF89 Live in ~2 minutes.');
   } catch(e) {
     toast('Save failed: ' + e.message, 'danger');
     setSaveStatus('','');

@@ -134,7 +134,7 @@
   /* TRACKS */
   .tracks-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
   .tracks-label{font-size:13px;font-weight:700;}
-  .track-item-wrap{display:flex;align-items:stretch;margin-bottom:10px;width:100%;}
+  .track-item-wrap{display:flex;align-items:stretch;margin-bottom:10px;}
   .drag-handle{
     cursor:grab;color:var(--text3);
     display:flex;align-items:center;justify-content:center;
@@ -876,7 +876,7 @@ function albumHTML(rel) {
       ${isSingles ? 'Add single' : 'Add track'}
     </button>
   </div>
-  <div id="tracks-${id}">${tracks}</div>
+  <div id="tracks-${id}" style="display:flex;flex-direction:column">${tracks}</div>
   <div class="divider"></div>`;
 }
 
@@ -1524,7 +1524,7 @@ function playlistHTML(rel) {
     </button>
   </div>
   ${allTracks.length === 0 ? `<div style="font-size:13px;color:var(--text3);padding:16px 0">Upload some tracks to your singles or albums first, then come back to build a playlist.</div>` : ''}
-  <div id="tracks-${id}">${trackRows}</div>
+  <div id="tracks-${id}" style="display:flex;flex-direction:column">${trackRows}</div>
   <div class="divider"></div>`;
 }
 

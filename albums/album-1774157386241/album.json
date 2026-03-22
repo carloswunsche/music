@@ -1,0 +1,23 @@
+{
+  "title": "Human: the demos",
+  "type": "album",
+  "year": 2026,
+  "cover": "cover.jpg",
+  "tracks": [
+    {
+      "title": "Old and new",
+      "src": "old-and-new-wip-001.mp3",
+      "duration": 228
+    },
+    {
+      "title": "Enjoy the ride",
+      "src": "enjoy-the-ride_001.mp3",
+      "duration": 92
+    },
+    {
+      "title": "Ask yourself",
+      "src": "ask-yourself-arr-002.mp3",
+      "duration": 252
+    }
+  ]
+}

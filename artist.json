@@ -9,8 +9,7 @@
     "youtube": "https://youtube.com/@carl.wunsche"
   },
   "releases": [
-    "singles/singles.json",
-    "albums/album-1774157386241/album.json"
+    "singles/singles.json"
   ],
   "recommendations": [
     "https://julabrego.github.io/music/artist.json"

@@ -237,7 +237,7 @@
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
       Copy link
     </button>
-    <button class="btn btn-primary" id="save-btn" onclick="saveAll()" disabled>
+    <button class="btn btn-primary" id="save-btn" onclick="saveAll()" disabled style="display:none">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Save changes
     </button>
@@ -246,41 +246,39 @@
 
 <!-- SETUP SCREEN -->
 <div id="setup-screen" class="setup-screen" style="display:none">
+  <!-- Language selector — outside the card -->
+  <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px">
+    <button id="lang-en" onclick="setLang('en')" style="border:none;background:var(--surface2);color:var(--text);font-family:var(--font);font-size:13px;font-weight:600;padding:6px 16px;border-radius:20px;cursor:pointer;transition:all var(--ease)">English</button>
+    <button id="lang-es" onclick="setLang('es')" style="border:none;background:transparent;color:var(--text3);font-family:var(--font);font-size:13px;font-weight:600;padding:6px 16px;border-radius:20px;cursor:pointer;transition:all var(--ease)">Español</button>
+  </div>
+
   <div class="setup-card" style="max-width:520px">
     <div class="setup-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
     </div>
-    <div class="setup-title">Get started with Unmuted</div>
-    <p class="setup-sub">Your music lives on your own free GitHub account. Just paste a token and we handle everything else.</p>
-
-    <!-- Step indicator -->
-    <div id="setup-steps-indicator" style="display:flex;align-items:center;gap:8px;margin-bottom:24px;justify-content:center">
-      <div id="step-dot-1" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></div>
-      <div id="step-dot-2" style="width:8px;height:8px;border-radius:50%;background:var(--border2)"></div>
-      <div id="step-dot-3" style="width:8px;height:8px;border-radius:50%;background:var(--border2)"></div>
-    </div>
+    <div class="setup-title" id="setup-title">Get started with Unmuted</div>
+    <p class="setup-sub" id="setup-sub">Your music lives on your own free GitHub account. Just paste a token and we handle everything else.</p>
 
     <!-- Step 1: Get token -->
     <div id="setup-step-1">
       <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;text-align:left">
-        <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text)">Create a free GitHub account and token</div>
+        <div id="setup-steps-title" style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text)">Host your music using GitHub</div>
         <div class="setup-steps">
-          <div class="setup-step"><div class="setup-step-num">1</div><div>Go to <a href="https://github.com/signup" target="_blank" style="color:var(--accent2)">github.com/signup</a> and create a free account <span style="color:var(--text3)">(skip if you have one)</span></div></div>
-          <div class="setup-step"><div class="setup-step-num">2</div><div>Open <a href="https://github.com/settings/tokens/new?description=Unmuted&scopes=repo&default_expires_at=none" target="_blank" style="color:var(--accent2)">this link</a> to pre-fill a token for Unmuted</div></div>
-          <div class="setup-step"><div class="setup-step-num">3</div><div>Set expiration to <strong>No expiration</strong>, scroll down, click <strong style="color:var(--green)">Generate token</strong></div></div>
-          <div class="setup-step"><div class="setup-step-num">4</div><div>Copy the token that appears and paste it below</div></div>
+          <div class="setup-step"><div class="setup-step-num">1</div><div id="setup-step-text-1">Follow <a href="https://github.com/settings/tokens/new?description=Unmuted&scopes=repo&default_expires_at=none" target="_blank" style="color:var(--accent2);font-weight:700;text-decoration:underline;text-underline-offset:3px">this link</a> and create a free account</div></div>
+          <div class="setup-step"><div class="setup-step-num">2</div><div id="setup-step-text-2">Once you're in, scroll down and tap <strong style="color:var(--green)">Generate token</strong></div></div>
+          <div class="setup-step"><div class="setup-step-num">3</div><div id="setup-step-text-3">Copy the token (it's a bunch of letters and numbers) and paste it below</div></div>
         </div>
       </div>
       <input type="text" style="display:none" aria-hidden="true">
       <input type="password" style="display:none" aria-hidden="true">
       <div class="field">
-        <label class="label">Paste your token here</label>
+        <label class="label" id="setup-token-label">Paste your token here</label>
         <input class="input" id="token-input" type="text" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="-webkit-text-security:disc;font-family:monospace" onkeydown="if(event.key==='Enter')connectGitHub()">
       </div>
       <div class="alert alert-danger" id="setup-error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="setup-error-msg"></span></div>
-      <button class="btn btn-primary" id="setup-connect-btn" style="width:100%;justify-content:center" onclick="connectGitHub()">
+      <button class="btn btn-primary" id="setup-connect-btn" style="width:100%;justify-content:center" onclick="connectGitHub()" data-label-en="Connect" data-label-es="Conectar">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-        Connect
+        Create dashboard
       </button>
     </div>
 
@@ -301,12 +299,29 @@
       <div style="width:60px;height:60px;background:var(--green-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:1px solid var(--green-border)">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <div style="font-size:18px;font-weight:700;margin-bottom:8px">You're all set!</div>
-      <div id="setup-done-msg" style="font-size:13px;color:var(--text2);margin-bottom:20px"></div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="enterDashboard()">
-        Open my dashboard
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+      <div style="font-size:18px;font-weight:700;margin-bottom:6px" id="setup-done-title">Almost there...</div>
+      <div id="setup-done-msg" style="font-size:13px;color:var(--text2);margin-bottom:16px"></div>
+
+      <!-- Their dashboard URL -->
+      <div id="setup-url-box" style="display:none;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-xs);padding:10px 12px;margin-bottom:16px;text-align:left">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px" id="setup-url-label">Your dashboard URL</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="setup-url-text" style="font-size:12px;color:var(--accent2);font-family:monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="copySetupUrl()" title="Copy">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px" id="setup-bookmark-hint">This is your dashboard. Keep this link safe!</div>
+      </div>
+
+      <!-- Countdown + progress -->
+      <div id="setup-countdown-box" style="margin-bottom:16px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px" id="setup-countdown-msg">Setting up GitHub Pages...</div>
+        <div style="background:var(--bg3);border-radius:4px;height:6px;overflow:hidden">
+          <div id="setup-countdown-bar" style="height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width 1s linear"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px" id="setup-countdown-timer"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -364,7 +379,7 @@
 <div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:9px 18px;font-size:13px;font-weight:500;color:var(--text);z-index:400;opacity:0;pointer-events:none;transition:all .22s;white-space:nowrap;"></div>
 
 <script>
-// ââ STATE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── STATE ────────────────────────────────────────────────────────
 const DASHBOARD_VERSION = '1.0.0';
 let GH = { token: localStorage.getItem('un_dash_token')||'', username: localStorage.getItem('un_dash_user')||'', repo: localStorage.getItem('un_dash_repo')||'music' };
 let artistData = null;
@@ -373,8 +388,22 @@ let pendingUploads = {}; // key -> { b64, sha, path, filename }
 let currentSection = 'profile';
 let currentReleaseId = null;
 
-// ââ BOOT âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── BOOT ─────────────────────────────────────────────────────────
 async function boot() {
+  // Check if credentials were passed via URL hash (cross-domain redirect from setup)
+  const hash = location.hash;
+  if (hash.startsWith('#unmuted-setup=')) {
+    try {
+      const creds = JSON.parse(atob(hash.slice('#unmuted-setup='.length)));
+      if (creds.t && creds.u) {
+        localStorage.setItem('un_dash_token', creds.t);
+        localStorage.setItem('un_dash_user', creds.u);
+        localStorage.setItem('un_dash_repo', creds.r || 'music');
+        GH = { token: creds.t, username: creds.u, repo: creds.r || 'music' };
+        history.replaceState(null, '', location.pathname); // clean the URL
+      }
+    } catch(e) {}
+  }
   if (GH.token && GH.username) { showMain(); await loadData(); }
   else showSetup();
 }
@@ -392,11 +421,12 @@ function showMain() {
   document.getElementById('copy-link-btn').style.display = 'inline-flex';
   document.getElementById('view-page-btn').style.display = 'inline-flex';
   document.getElementById('save-btn').disabled = false;
+  document.getElementById('save-btn').style.display = 'inline-flex';
   updateShareUrls();
   renderSection('profile');
 }
 
-// ââ GITHUB API âââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── GITHUB API ───────────────────────────────────────────────────
 async function ghGet(path) {
   const r = await fetch(`https://api.github.com/repos/${GH.username}/${GH.repo}/contents/${path}`, {
     headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json' }
@@ -455,7 +485,92 @@ async function ghListFolder(folder) {
   } catch { return []; }
 }
 
-// ââ CONNECT ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── CONNECT ──────────────────────────────────────────────────────
+const LANG = {
+  en: {
+    title: 'Get started with Unmuted',
+    sub: 'Your music lives on your own free GitHub account. Just paste a token and we handle everything else.',
+    stepsTitle: 'Host your music using GitHub',
+    step1: 'Follow <a href="https://github.com/settings/tokens/new?description=Unmuted&scopes=repo&default_expires_at=none" target="_blank" style="color:var(--accent2);font-weight:700;text-decoration:underline;text-underline-offset:3px">this link</a> and create a free account',
+    step2: 'Once you\'re in, scroll down and tap <strong style="color:var(--green)">Generate token</strong>',
+    step3: 'Copy the token (it\'s a bunch of letters and numbers) and paste it below',
+    tokenLabel: 'Paste your token here',
+    connectBtn: 'Create dashboard',
+    invalidToken: 'Token is invalid. Make sure you copied it correctly.',
+    progVerify: 'Verifying token...',
+    progRepo: 'Checking your repository...',
+    progCreate: 'Creating your music repository...',
+    progInit: 'Initializing your artist page...',
+    progSingles: 'Setting up your singles...',
+    progPages: 'Enabling GitHub Pages...',
+    progPages2: 'Your page will be live in ~2 minutes',
+    progDone: 'All done!',
+    doneBtn: 'Open my dashboard',
+    urlLabel: 'Your dashboard URL',
+    bookmarkHint: 'This is your dashboard. Keep this link safe!',
+    countdownMsg: 'Setting up GitHub Pages...',
+    liveMsg: 'Your page is live!',
+    doneTitle: 'Almost there...',
+  },
+  es: {
+    title: 'Empieza con Unmuted',
+    sub: 'Tu musica vive en tu propia cuenta gratuita de GitHub. Solo pega un token y nosotros hacemos el resto.',
+    stepsTitle: 'Aloja tu musica en GitHub',
+    step1: 'Sigue <a href="https://github.com/settings/tokens/new?description=Unmuted&scopes=repo&default_expires_at=none" target="_blank" style="color:var(--accent2);font-weight:700;text-decoration:underline;text-underline-offset:3px">este enlace</a> y crea una cuenta gratuita',
+    step2: 'Una vez adentro, baja hasta el final y toca <strong style="color:var(--green)">Generate token</strong>',
+    step3: 'Copia el token (es una serie larga de letras y numeros) y pegalo abajo',
+    tokenLabel: 'Pega tu token aqui',
+    connectBtn: 'Crear mi panel',
+    invalidToken: 'El token no es valido. Asegurate de haberlo copiado correctamente.',
+    progVerify: 'Verificando token...',
+    progRepo: 'Revisando tu repositorio...',
+    progCreate: 'Creando tu repositorio de musica...',
+    progInit: 'Inicializando tu pagina de artista...',
+    progSingles: 'Configurando tus singles...',
+    progPages: 'Activando GitHub Pages...',
+    progPages2: 'Tu pagina estara lista en ~2 minutos',
+    progDone: 'Todo listo!',
+    doneBtn: 'Abrir mi panel',
+    urlLabel: 'Tu URL del panel',
+    bookmarkHint: 'Este es tu panel. Guarda bien este enlace!',
+    countdownMsg: 'Configurando GitHub Pages...',
+    liveMsg: 'Tu pagina esta lista!',
+    doneTitle: 'Ya casi...',
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  const L = LANG[lang];
+  const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  set('setup-title', L.title);
+  set('setup-sub', L.sub);
+  set('setup-steps-title', L.stepsTitle);
+  set('setup-step-text-1', L.step1);
+  set('setup-step-text-2', L.step2);
+  set('setup-step-text-3', L.step3);
+  set('setup-token-label', L.tokenLabel);
+  const btn = document.getElementById('setup-connect-btn');
+  if (btn && !btn.disabled) btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg> ' + (L.connectBtn || 'Create dashboard');
+  set('setup-done-title', L.doneTitle || "You're all set!");
+  set('setup-url-label', L.urlLabel || 'Your dashboard URL');
+  set('setup-bookmark-hint', L.bookmarkHint || 'Save this link or add it to your bookmarks.');
+  set('setup-countdown-msg', L.countdownMsg || 'Setting up GitHub Pages...');
+  // Style buttons
+  document.getElementById('lang-en').style.background = lang === 'en' ? 'var(--surface2)' : 'transparent';
+  document.getElementById('lang-en').style.color = lang === 'en' ? 'var(--text)' : 'var(--text3)';
+  document.getElementById('lang-es').style.background = lang === 'es' ? 'var(--surface2)' : 'transparent';
+  document.getElementById('lang-es').style.color = lang === 'es' ? 'var(--text)' : 'var(--text3)';
+}
+
+function autoDetectLang() {
+  const browserLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  const lang = browserLang.startsWith('es') ? 'es' : 'en';
+  setLang(lang);
+}
+
 function setSetupStep(n) {
   [1,2,3].forEach(i => {
     document.getElementById('setup-step-' + i).style.display = i === n ? 'block' : 'none';
@@ -487,16 +602,16 @@ async function connectGitHub() {
 
   try {
     // Step 1: Verify token and get username automatically
-    setSetupProgress(10, 'Verifying token...', '');
+    setSetupProgress(10, LANG[currentLang].progVerify, '');
     const userR = await fetch('https://api.github.com/user', { headers: { Authorization: 'token ' + token } });
-    if (userR.status === 401) throw new Error('Token is invalid. Make sure you copied it correctly.');
+    if (userR.status === 401) throw new Error(LANG[currentLang].invalidToken);
     if (!userR.ok) throw new Error('GitHub returned error ' + userR.status);
     const userData = await userR.json();
     const username = userData.login;
     const repo = 'music';
 
     setSetupStep(2);
-    setSetupProgress(20, 'Checking your repository...', '@' + username);
+    setSetupProgress(20, LANG[currentLang].progRepo, '@' + username);
 
     // Step 2: Check if repo exists
     const repoR = await fetch('https://api.github.com/repos/' + username + '/' + repo, { headers: { Authorization: 'token ' + token } });
@@ -504,7 +619,7 @@ async function connectGitHub() {
 
     if (repoR.status === 404) {
       // Create the repo
-      setSetupProgress(35, 'Creating your music repository...', username + '/' + repo);
+      setSetupProgress(35, LANG[currentLang].progCreate, username + '/' + repo);
       const createR = await fetch('https://api.github.com/user/repos', {
         method: 'POST',
         headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
@@ -529,17 +644,24 @@ async function connectGitHub() {
 
     if (isNewRepo) {
       // Step 3: Initialize artist.json
-      setSetupProgress(55, 'Initializing your artist page...', '');
+      setSetupProgress(55, LANG[currentLang].progInit, '');
       const artistJson = JSON.stringify({ schema: 'unmuted/v1', name: '', bio: '', location: '', avatar: 'avatar.jpg', links: {}, releases: ['singles/singles.json'], recommendations: [] }, null, 2);
       await ghPut('artist.json', artistJson, null, 'Initialize Unmuted artist page');
 
       // Step 4: Initialize singles/singles.json
-      setSetupProgress(70, 'Setting up your singles...', '');
+      setSetupProgress(65, LANG[currentLang].progSingles, '');
       const singlesJson = JSON.stringify({ title: 'Singles', type: 'singles', tracks: [] }, null, 2);
       await ghPut('singles/singles.json', singlesJson, null, 'Initialize singles');
 
-      // Step 5: Enable GitHub Pages
-      setSetupProgress(85, 'Enabling GitHub Pages...', 'Your page will be live in ~2 minutes');
+      // Step 5: Upload dashboard as index.html — read from DOM, no network needed
+      setSetupProgress(75, currentLang === 'es' ? 'Subiendo el panel...' : 'Uploading dashboard...', '');
+      try {
+        const dashboardHtml = '<!DOCTYPE html>' + '\n' + document.documentElement.outerHTML;
+        await ghPut('index.html', dashboardHtml, null, 'Add Unmuted dashboard');
+      } catch(e) { console.warn('Could not upload index.html:', e); }
+
+      // Step 6: Enable GitHub Pages
+      setSetupProgress(88, LANG[currentLang].progPages, LANG[currentLang].progPages2);
       try {
         await fetch('https://api.github.com/repos/' + username + '/' + repo + '/pages', {
           method: 'POST',
@@ -549,13 +671,19 @@ async function connectGitHub() {
       } catch(e) { /* Pages may already be enabled or fail silently */ }
     }
 
-    setSetupProgress(100, 'All done!', '');
+    setSetupProgress(100, LANG[currentLang].progDone, '');
     setSetupStep(3);
 
     const pagesUrl = 'https://' + username + '.github.io/' + repo;
+    const isOwnPage = location.hostname === username + '.github.io';
     document.getElementById('setup-done-msg').innerHTML =
-      'Your music repo is ready at <strong>' + username + '/' + repo + '</strong>.' +
-      (isNewRepo ? '<br>GitHub Pages will be live at <a href="' + pagesUrl + '" target="_blank" style="color:var(--accent2)">' + pagesUrl + '</a> in ~2 minutes.' : '');
+      currentLang === 'es'
+        ? 'Tu panel estara listo en menos de 2 minutos.'
+        : 'Your dashboard will be ready in less than 2 minutes.';
+    // Auto-trigger redirect flow
+    if (!isOwnPage) {
+      setTimeout(enterDashboard, 400);
+    }
 
   } catch(e) {
     btn.disabled = false;
@@ -566,13 +694,81 @@ async function connectGitHub() {
   }
 }
 
+let _countdownInterval = null;
+let _pollInterval = null;
+
+function startRedirectCountdown(url) {
+  const bar = document.getElementById('setup-countdown-bar');
+  const msg = document.getElementById('setup-countdown-msg');
+  const timer = document.getElementById('setup-countdown-timer');
+  const L = LANG[currentLang];
+
+  const TOTAL = 120; // 2 minutes
+  let elapsed = 0;
+
+  // Update every second
+  _countdownInterval = setInterval(() => {
+    elapsed++;
+    const pct = Math.min((elapsed / TOTAL) * 100, 99);
+    if (bar) bar.style.width = pct + '%';
+    const remaining = TOTAL - elapsed;
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    if (timer) timer.textContent = mins + ':' + String(secs).padStart(2,'0');
+    if (elapsed >= TOTAL) {
+      clearInterval(_countdownInterval);
+      doRedirect(url);
+    }
+  }, 1000);
+
+  // Poll every 10 seconds to see if the page is live
+  _pollInterval = setInterval(async () => {
+    try {
+      const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+      if (r.ok) {
+        clearInterval(_pollInterval);
+        clearInterval(_countdownInterval);
+        if (bar) bar.style.width = '100%';
+        if (bar) bar.style.background = 'var(--green)';
+        if (msg) msg.textContent = currentLang === 'es' ? 'Tu pagina esta lista!' : 'Your page is live!';
+        if (timer) timer.textContent = '';
+        setTimeout(() => doRedirect(url), 800);
+      }
+    } catch(e) { /* not live yet */ }
+  }, 10000);
+}
+
+function doRedirect(url) {
+  if (_countdownInterval) clearInterval(_countdownInterval);
+  if (_pollInterval) clearInterval(_pollInterval);
+  // Pass credentials in the hash so the new page can bootstrap localStorage
+  const creds = btoa(JSON.stringify({ t: GH.token, u: GH.username, r: GH.repo }));
+  window.location.href = url + '#unmuted-setup=' + creds;
+}
+
+function copySetupUrl() {
+  const url = document.getElementById('setup-url-text')?.textContent;
+  if (url) navigator.clipboard.writeText(url).then(() => toast('Copied!'));
+}
+
 async function enterDashboard() {
+  const theirDashboard = 'https://' + GH.username + '.github.io/' + GH.repo + '/';
+  const currentHost = location.hostname;
+  if (currentHost !== GH.username + '.github.io') {
+    // Show URL box and start countdown
+    const urlBox = document.getElementById('setup-url-box');
+    const urlText = document.getElementById('setup-url-text');
+    if (urlBox) urlBox.style.display = 'block';
+    if (urlText) urlText.textContent = theirDashboard;
+    startRedirectCountdown(theirDashboard);
+    return;
+  }
   document.getElementById('setup-screen').style.display = 'none';
   showMain();
   await loadData();
 }
 
-// ââ LOAD DATA ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── LOAD DATA ────────────────────────────────────────────────────
 async function loadData() {
   setSaveStatus('loading', 'Loading...');
   releases = [];
@@ -600,7 +796,7 @@ async function loadData() {
       showImgPreview('avatar', `data:image/jpeg;base64,${b64}`);
     } catch {}
 
-    // Auto-create singles release if not present â write it to GitHub immediately
+    // Auto-create singles release if not present — write it to GitHub immediately
     const hasSingles = releases.some(r => r.type === 'singles');
     if (!hasSingles) {
       const singlesPath = 'singles/singles.json';
@@ -646,7 +842,7 @@ function guessType(path, data) {
   return 'album';
 }
 
-// ââ RELEASES NAV âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── RELEASES NAV ─────────────────────────────────────────────────
 function typeThumbIcon(type) {
   const icons = {
     singles:  { bg: 'rgba(123,94,167,0.18)', color: '#9b7fcb', svg: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>' },
@@ -684,7 +880,7 @@ function renderReleasesNav() {
   });
 }
 
-// ââ SECTIONS âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── SECTIONS ─────────────────────────────────────────────────────
 function showSection(name) {
   currentSection = name;
   currentReleaseId = null;
@@ -736,7 +932,7 @@ function renderSection(name) {
   if (name === 'links' && artistData) setTimeout(() => populateLinks(artistData.links || {}), 0);
 }
 
-// ââ PROFILE HTML âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── PROFILE HTML ─────────────────────────────────────────────────
 function profileHTML() {
   return `
   <div class="sec-title">Your profile</div>
@@ -751,7 +947,7 @@ function profileHTML() {
         Upload photo
       </button>
       <input type="file" id="avatar-file" class="file-input" accept="image/*" onchange="handleImgUpload('avatar','avatar.jpg',this)">
-      <p>Square, JPG or PNG, at least 400Ã400px.</p>
+      <p>Square, JPG or PNG, at least 400×400px.</p>
     </div>
   </div>
   <div class="field-row">
@@ -885,7 +1081,7 @@ function addRecRow(url) {
 
 function updateAddRecBtn() {}
 
-// ââ LINKS HTML âââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── LINKS HTML ───────────────────────────────────────────────────
 function linksHTML() {
   return `
   <div class="sec-title">Social links</div>
@@ -913,7 +1109,7 @@ function extractHandle(url) {
   return url.replace(/https?:\/\/(www\.)?(instagram|youtube|tiktok)\.com\//,'').replace(/^@/,'');
 }
 
-// ââ RELEASE SECTION ââââââââââââââââââââââââââââââââââââââââââââââ
+// ── RELEASE SECTION ──────────────────────────────────────────────
 function renderReleaseSection(id) {
   const rel = releases.find(r => r.id === id);
   if (!rel) return;
@@ -965,7 +1161,7 @@ function renderReleaseSection(id) {
   }
 }
 
-// ââ ALBUM / EP / SINGLES HTML âââââââââââââââââââââââââââââââââââââ
+// ── ALBUM / EP / SINGLES HTML ─────────────────────────────────────
 function albumHTML(rel) {
   const id = rel.id;
   const d = rel.data;
@@ -1272,7 +1468,7 @@ function removeTrackFromRelease(relId, idx) {
   markDirty();
 }
 
-// ââ DRAG AND DROP REORDERING ââââââââââââââââââââââââââââââââââ
+// ── DRAG AND DROP REORDERING ──────────────────────────────────
 let dragSrc = null;
 
 function initDragDrop(containerId) {
@@ -1439,7 +1635,7 @@ function showConvertCard(relId, idx, file, sizeMB, mustConvert, customMsg) {
   stEl.innerHTML = `
     <div style="background:${mustConvert ? 'var(--danger-bg)' : 'var(--warning-bg)'};border:1px solid ${mustConvert ? 'rgba(224,108,108,.2)' : 'rgba(224,168,74,.25)'};border-radius:8px;padding:12px 14px;margin-top:8px;">
       <div style="font-size:12px;color:${mustConvert ? 'var(--danger)' : 'var(--warning)'};font-weight:600;margin-bottom:4px;">
-        ${mustConvert ? `â ï¸ ${sizeMB}MB - too large for GitHub (25MB limit)` : `â ï¸ ${sizeMB}MB - large file, listeners may experience slow loading`}
+        ${mustConvert ? `⚠️ ${sizeMB}MB - too large for GitHub (25MB limit)` : `⚠️ ${sizeMB}MB - large file, listeners may experience slow loading`}
       </div>
       <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">${tip}</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
@@ -1534,7 +1730,7 @@ async function convertAndLoad(relId, idx, file) {
     const baseName = file.name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9._-]/g,'').replace(/\.[^.]+$/, '');
     const newFile = new File([blob], `${baseName}.${outExt}`, { type: mimeType });
 
-    setProgress(100, `Done! ${(file.size/1024/1024).toFixed(1)}MB â ${sizeMB}MB`);
+    setProgress(100, `Done! ${(file.size/1024/1024).toFixed(1)}MB → ${sizeMB}MB`);
     await audioCtx.close();
 
     setTimeout(() => {
@@ -1616,7 +1812,7 @@ function handleReleaseCover(relId, input) {
   reader.readAsDataURL(file);
 }
 
-// ââ PLAYLIST HTML âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── PLAYLIST HTML ─────────────────────────────────────────────────
 function updateNavTitle(id, val) {
   const el = document.getElementById('nav-rel-' + id);
   if (el) { const n = el.querySelector('.nav-release-name'); if (n) n.textContent = val || 'Untitled'; }
@@ -1732,7 +1928,7 @@ function getAllTracks() {
   return all;
 }
 
-// ââ NEW RELEASE âââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── NEW RELEASE ───────────────────────────────────────────────────
 function openNewReleaseModal() { document.getElementById('new-release-modal').classList.add('on'); }
 function closeNewReleaseModal() { document.getElementById('new-release-modal').classList.remove('on'); }
 
@@ -1799,7 +1995,7 @@ async function deleteRelease(id) {
   toast('Album removed and files deleted Done');
 }
 
-// ââ GET RELEASE DATA FROM DOM âââââââââââââââââââââââââââââââââââââ
+// ── GET RELEASE DATA FROM DOM ─────────────────────────────────────
 function getReleaseData(rel) {
   const id = rel.id;
   const titleEl = document.getElementById(`rel-title-${id}`);
@@ -1872,7 +2068,7 @@ function getReleaseData(rel) {
   };
 }
 
-// ââ SHARE / SETTINGS HTML âââââââââââââââââââââââââââââââââââââââââ
+// ── SHARE / SETTINGS HTML ─────────────────────────────────────────
 function shareHTML() {
   const base = `https://${GH.username}.github.io/${GH.repo}`;
   const manifest = `${base}/artist.json`;
@@ -1931,7 +2127,7 @@ function updateRepo() {
   toast('Repository updated to "' + val + '" Done');
 }
 
-// ââ IMAGE UPLOAD ââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── IMAGE UPLOAD ──────────────────────────────────────────────────
 function handleImgUpload(key, path, input) {
   const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
@@ -1949,7 +2145,7 @@ function showImgPreview(key, src) {
   if (phEl) phEl.style.display = 'none';
 }
 
-// ââ SAVE ALL ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── SAVE ALL ──────────────────────────────────────────────────────
 async function saveAll() {
   const btn = document.getElementById('save-btn');
   btn.disabled = true; btn.innerHTML = `<div class="spin"></div> Saving...`;
@@ -2059,7 +2255,7 @@ function getProfileData() {
   };
 }
 
-// ââ UTILS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── UTILS ─────────────────────────────────────────────────────────
 function showSection_share() { renderSection('share'); }
 function updateShareUrls() {}
 function markDirty() {}

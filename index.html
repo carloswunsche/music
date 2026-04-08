@@ -1119,6 +1119,24 @@ function renderReleaseSection(id) {
   // Init drag-and-drop after render
   setTimeout(() => initDragDrop('tracks-' + id), 50);
 
+  // Restore LRC for album/EP tracks
+  if (rel.type !== 'singles' && rel.type !== 'playlist') {
+    const base = rel.path.substring(0, rel.path.lastIndexOf('/')+1);
+    (rel.data.tracks || []).forEach((track, idx) => {
+      if (!track.lyrics_url) return;
+      const lrcPath = base + track.lyrics_url;
+      ghGet(lrcPath).then(f => {
+        const text = atob(f.content.replace(/[\r\n]/g,''));
+        const lrcArea = document.getElementById(`tlyrics-lrc-${id}-${idx}`);
+        const urlHid  = document.getElementById(`tlrc-url-${id}-${idx}`);
+        const nameEl  = document.getElementById(`tlrc-name-${id}-${idx}`);
+        if (lrcArea) { lrcArea.value = text; lrcArea.style.display = 'block'; }
+        if (urlHid)  urlHid.value = track.lyrics_url;
+        if (nameEl)  nameEl.textContent = track.lyrics_url;
+      }).catch(()=>{});
+    });
+  }
+
   // Restore release-level cover (albums/playlists only)
   if (rel.type !== 'singles') {
     const coverKey = `cover-${id}`;
@@ -1135,10 +1153,19 @@ function renderReleaseSection(id) {
     }
   }
 
-  // Restore per-track covers for singles
+  // Restore per-track covers and LRC previews for singles
   if (rel.type === 'singles') {
     const base = rel.path.substring(0, rel.path.lastIndexOf('/')+1);
     (rel.data.tracks || []).forEach((track, idx) => {
+      // Restore LRC preview from GitHub
+      if (track.lyrics_url) {
+        const lrcPath = base + track.lyrics_url;
+        ghGet(lrcPath).then(f => {
+          const text = atob(f.content.replace(/[\r\n]/g,''));
+          const lrcArea = document.getElementById(`tlyrics-lrc-${id}-${idx}`);
+          if (lrcArea) { lrcArea.value = text; lrcArea.style.display = 'block'; }
+        }).catch(()=>{});
+      }
       if (!track.cover) return;
       const cacheKey = 'single-cover-' + id + '-' + idx;
       const applycover = (b64) => {
@@ -1274,9 +1301,8 @@ function onPickExistingSingle(relId, idx, sel) {
 
 function trackRowHTML(relId, idx, track, isSingles=false) {
   const durDisplay = track.duration ? fmtDur(track.duration) : '';
-  const hasLrc = track.lyrics && track.lyrics.startsWith('[');
-  const hasText = track.lyrics && !hasLrc;
-  const lyricsMode = hasLrc ? 'lrc' : hasText ? 'text' : 'none';
+  const hasLrc = !!(track.lyrics_url);
+  const hasText = false; // text lyrics no longer supported — LRC only
   const singleOpts = isSingles ? [] : getSingleOptions();
   const hasSingles = singleOpts.length > 0;
 
@@ -1449,16 +1475,34 @@ function setLyricsTab(relId, idx, tab) {
 
 function handleLrcFile(relId, idx, input) {
   const file = input.files[0]; if (!file) return;
+  const safeName = file.name.toLowerCase().replace(/\s+/g, '-');
+  const rel = releases.find(r => r.id === relId);
+  const base = rel ? rel.path.substring(0, rel.path.lastIndexOf('/')+1) : 'singles/';
+  const path = base + safeName;
+  // Stage for upload
   const reader = new FileReader();
   reader.onload = e => {
-    const lrcText = e.target.result;
+    pendingUploads[`lrc-${relId}-${idx}`] = { b64: btoa(unescape(encodeURIComponent(e.target.result))), path, filename: safeName, text: e.target.result };
     const lrcArea = document.getElementById(`tlyrics-lrc-${relId}-${idx}`);
-    const nameEl = document.getElementById(`tlrc-name-${relId}-${idx}`);
-    if (lrcArea) lrcArea.value = lrcText;
-    if (nameEl) nameEl.textContent = file.name;
+    const nameEl  = document.getElementById(`tlrc-name-${relId}-${idx}`);
+    const urlHid  = document.getElementById(`tlrc-url-${relId}-${idx}`);
+    if (lrcArea) { lrcArea.value = e.target.result; lrcArea.style.display = 'block'; }
+    if (nameEl)  nameEl.textContent = safeName;
+    if (urlHid)  urlHid.value = safeName; // relative filename stored in JSON
     markDirty();
   };
   reader.readAsText(file);
+}
+
+function removeLrc(relId, idx) {
+  const lrcArea = document.getElementById(`tlyrics-lrc-${relId}-${idx}`);
+  const nameEl  = document.getElementById(`tlrc-name-${relId}-${idx}`);
+  const urlHid  = document.getElementById(`tlrc-url-${relId}-${idx}`);
+  if (lrcArea) { lrcArea.value = ''; lrcArea.style.display = 'none'; }
+  if (nameEl)  nameEl.textContent = 'No file';
+  if (urlHid)  urlHid.value = '';
+  delete pendingUploads[`lrc-${relId}-${idx}`];
+  markDirty();
 }
 
 function removeTrackFromRelease(relId, idx) {
@@ -2044,16 +2088,12 @@ function getReleaseData(rel) {
 
     // Regular new-upload track
     const title = document.getElementById(`ttitle-${id}-${idx}`)?.value.trim()||'';
-    const textPanel = document.getElementById(`lpanel-text-${id}-${idx}`);
-    const lrcArea = document.getElementById(`tlyrics-lrc-${id}-${idx}`);
-    const textArea = document.getElementById(`tlyrics-text-${id}-${idx}`);
-    const lrcMode = textPanel && textPanel.style.display === 'none';
-    const lyrics = lrcMode ? (lrcArea?.value.trim()||'') : (textArea?.value.trim()||'');
+    const lyrics_url = document.getElementById(`tlrc-url-${id}-${idx}`)?.value.trim()||'';
     const cover = document.getElementById(`tcover-${id}-${idx}`)?.value.trim()||'';
     const year = parseInt(document.getElementById(`tyear-${id}-${idx}`)?.value)||new Date().getFullYear();
     if (title||src) {
       const t = { title, src, duration: dur };
-      if (lyrics) t.lyrics = lyrics;
+      if (lyrics_url) t.lyrics_url = lyrics_url;
       if (isSingles) { t.cover = cover; t.year = year; }
       tracks.push(t);
     }
@@ -2165,10 +2205,10 @@ async function saveAll() {
       pendingUploads[key].b64 = null;
     }
 
-    // 2. Upload pending track files
+    // 2. Upload pending track files and LRC files
     for (const [key, val] of Object.entries(pendingUploads)) {
       if (!val.b64) continue;
-      if (!key.startsWith('track-') && !key.startsWith('single-cover-')) continue;
+      if (!key.startsWith('track-') && !key.startsWith('single-cover-') && !key.startsWith('lrc-')) continue;
       const sha = await ghGetSha(val.path);
       await ghPutBinary(val.path, val.b64, sha, `Upload ${val.filename||val.path.split('/').pop()}`);
       if (key.startsWith('track-')) {

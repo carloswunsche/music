@@ -1,10 +1,12 @@
 {
   "schema": "unmuted/v1",
-  "name": "",
+  "name": "Carlos Wunsche",
   "bio": "",
-  "avatar": "",
-  "links": {
-  },
-  "albums": [
-  ]
+  "location": "Buenos Aires / Miami",
+  "avatar": "avatar.jpg",
+  "links": {},
+  "releases": [
+    "singles/singles.json"
+  ],
+  "recommendations": []
 }

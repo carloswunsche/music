@@ -6,8 +6,7 @@
   "avatar": "avatar.jpg",
   "links": {},
   "releases": [
-    "singles/singles.json",
-    "albums/album-1775672534965/album.json"
+    "singles/singles.json"
   ],
   "recommendations": []
 }

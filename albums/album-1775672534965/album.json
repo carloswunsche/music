@@ -3,5 +3,12 @@
   "type": "ep",
   "year": 2026,
   "cover": "cover.jpg",
-  "tracks": []
+  "tracks": [
+    {
+      "title": "This time",
+      "src": "singles/this-time.mp3",
+      "duration": 230,
+      "fromSingle": true
+    }
+  ]
 }

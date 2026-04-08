@@ -1,17 +1,10 @@
 {
   "schema": "unmuted/v1",
-  "name": "Carlos Wunsche",
-  "bio": "Songwriter and multi-instrumentalist. My music borrows from film scores, rock, pop, and the video games I grew up playing with.",
-  "location": "Buenos Aires / Miami",
-  "avatar": "avatar.jpg",
+  "name": "",
+  "bio": "",
+  "avatar": "",
   "links": {
-    "instagram": "https://instagram.com/carloswunsche",
-    "youtube": "https://youtube.com/@carl.wunsche"
   },
-  "releases": [
-    "singles/singles.json"
-  ],
-  "recommendations": [
-    "https://julabrego.github.io/music/artist.json"
+  "albums": [
   ]
 }

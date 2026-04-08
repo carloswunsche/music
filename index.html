@@ -1407,34 +1407,20 @@ function trackRowHTML(relId, idx, track, isSingles=false) {
       </div>
     </div>
 
-    <!-- LYRICS (hidden when from single) -->
+    <!-- LYRICS -->
     <div id="tlyrics-row-${relId}-${idx}" style="display:${sourceMode==='pick'?'none':'block'};margin-top:12px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <label class="label" style="margin-bottom:0">Lyrics</label>
-        <div style="display:flex;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:2px">
-          <button id="ltab-none-${relId}-${idx}" onclick="setLyricsTab('${relId}',${idx},'none')"
-            style="border:none;background:${lyricsMode==='none'?'var(--surface2)':'transparent'};color:${lyricsMode==='none'?'var(--text)':'var(--text3)'};font-family:var(--font);font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;cursor:pointer;transition:all var(--ease)">None</button>
-          <button id="ltab-text-${relId}-${idx}" onclick="setLyricsTab('${relId}',${idx},'text')"
-            style="border:none;background:${lyricsMode==='text'?'var(--surface2)':'transparent'};color:${lyricsMode==='text'?'var(--text)':'var(--text3)'};font-family:var(--font);font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;cursor:pointer;transition:all var(--ease)">Type</button>
-          <button id="ltab-lrc-${relId}-${idx}" onclick="setLyricsTab('${relId}',${idx},'lrc')"
-            style="border:none;background:${lyricsMode==='lrc'?'var(--surface2)':'transparent'};color:${lyricsMode==='lrc'?'var(--text)':'var(--text3)'};font-family:var(--font);font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;cursor:pointer;transition:all var(--ease)">.lrc</button>
-        </div>
+      <label class="label" style="margin-bottom:6px">Synced lyrics <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional .lrc file)</span></label>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('tlrc-file-${relId}-${idx}').click()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          ${hasLrc ? 'Replace .lrc' : 'Upload .lrc'}
+        </button>
+        <span id="tlrc-name-${relId}-${idx}" style="font-size:11px;color:var(--text3)">${hasLrc ? esc(track.lyrics_url||'') : 'No file'}</span>
+        ${hasLrc ? `<button class="btn btn-danger btn-sm btn-icon" onclick="removeLrc('${relId}',${idx})" title="Remove lyrics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
       </div>
-      <div id="lpanel-text-${relId}-${idx}" style="display:${lyricsMode==='text'?'block':'none'}">
-        <textarea class="textarea" id="tlyrics-text-${relId}-${idx}" style="min-height:80px;font-size:12px;line-height:1.7" placeholder="Paste or type the lyrics here..." oninput="markDirty()">${hasLrc ? '' : esc(track.lyrics||'')}</textarea>
-      </div>
-      <div id="lpanel-lrc-${relId}-${idx}" style="display:${lyricsMode==='lrc'?'block':'none'}">
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
-          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('tlrc-file-${relId}-${idx}').click()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            ${hasLrc ? 'Replace .lrc' : 'Upload .lrc file'}
-          </button>
-          <span id="tlrc-name-${relId}-${idx}" style="font-size:11px;color:var(--text3)">${hasLrc ? 'Synced lyrics loaded' : ''}</span>
-        </div>
-        <input type="file" id="tlrc-file-${relId}-${idx}" class="file-input" accept=".lrc" onchange="handleLrcFile('${relId}',${idx},this)">
-        <div style="font-size:11px;color:var(--text3);line-height:1.6">.lrc files sync lyrics line-by-line to the music as it plays.<br>You can create them with apps like <strong>LRC Maker</strong> or <strong>Aegisub</strong>.</div>
-        <textarea id="tlyrics-lrc-${relId}-${idx}" style="display:none">${hasLrc ? esc(track.lyrics||'') : ''}</textarea>
-      </div>
+      <input type="file" id="tlrc-file-${relId}-${idx}" class="file-input" accept=".lrc" onchange="handleLrcFile('${relId}',${idx},this)">
+      <textarea id="tlyrics-lrc-${relId}-${idx}" class="textarea" style="display:${hasLrc?'block':'none'};min-height:80px;font-size:11px;font-family:monospace;line-height:1.7" placeholder="LRC content preview..." readonly></textarea>
+      <input type="hidden" id="tlrc-url-${relId}-${idx}" value="${esc(track.lyrics_url||'')}">
     </div>
 
     <input type="hidden" id="tsrc-${relId}-${idx}" value="${esc(track.src||'')}">

@@ -9,6 +9,14 @@
       "lyrics_url": "reasons.lrc",
       "cover": "dream-powder---reasons-cover.jpg",
       "year": 2026
+    },
+    {
+      "title": "This time",
+      "src": "this-time.mp3",
+      "duration": 230,
+      "lyrics_url": "lyrics.lrc",
+      "cover": "single-1-cover.jpg",
+      "year": 2026
     }
   ]
 }

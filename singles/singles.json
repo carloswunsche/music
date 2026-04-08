@@ -1,5 +1,13 @@
 {
   "title": "Singles",
   "type": "singles",
-  "tracks": []
+  "tracks": [
+    {
+      "title": "hey",
+      "src": "",
+      "duration": 0,
+      "cover": "",
+      "year": 2026
+    }
+  ]
 }
